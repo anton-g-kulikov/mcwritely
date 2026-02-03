@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3] - 2026-02-03
+### Changed
+- Refactored Keychain service identification to use `Bundle.main.bundleIdentifier` dynamically.
+- Improved project portability by removing hardcoded personal domains.
+
+### Fixed
+- Outdated `OpenAIService` unit tests to align with current implementation.
+- Added tests for Keychain service identification.
+
 ## [1.2] - 2026-02-03
 ### Added
 - Shields.io badges to README (Swift version, macOS platform, License, Version).
