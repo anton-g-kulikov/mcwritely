@@ -1,4 +1,4 @@
-# McWritely
+# <img src="icon.png" width="64" valign="middle"> McWritely
 
 McWritely is a lightweight macOS utility that provides AI-powered writing assistance in any application. It captures your selected text, refines it using OpenAI, and lets you replace the original text with a much better version instantly.
 

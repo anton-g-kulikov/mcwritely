@@ -6,6 +6,8 @@
 
 - [x] **DOC-TASK-013: Update test documentation and define test cases** - ✅ **COMPLETED** - Aligned test documentation with Swift/XCTest and documented current/planned tests
 
+- [x] **DOC-TASK-016: Add app icon to README.md** - ✅ **COMPLETED** - Included the new mustache pencil icon in the project documentation.
+- [x] **UI-TASK-015: Generate and implement new "McWritely" app icon** - ✅ **COMPLETED** - Created a pencil with a mustache icon and updated the app bundle.
 - [x] **CONFIG-TASK-013: Rename project from Writely to McWritely** - ✅ **COMPLETED** - Updated all project assets, documentation, and source code.
 
 ## Completed Tasks
