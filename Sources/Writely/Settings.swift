@@ -5,15 +5,31 @@ class Settings: ObservableObject {
     
     @Published var apiKey: String {
         didSet {
-            UserDefaults.standard.set(apiKey, forKey: "openai_api_key")
+            let trimmed = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
+            if trimmed.isEmpty {
+                KeychainStore.shared.delete(service: Self.keychainService, account: Self.keychainAccount)
+            } else {
+                KeychainStore.shared.save(trimmed, service: Self.keychainService, account: Self.keychainAccount)
+            }
         }
     }
     
     private init() {
-        self.apiKey = UserDefaults.standard.string(forKey: "openai_api_key") ?? ""
+        if let storedKey = KeychainStore.shared.read(service: Self.keychainService, account: Self.keychainAccount) {
+            self.apiKey = storedKey
+        } else if let legacyKey = UserDefaults.standard.string(forKey: "openai_api_key"), !legacyKey.isEmpty {
+            self.apiKey = legacyKey
+            _ = KeychainStore.shared.save(legacyKey, service: Self.keychainService, account: Self.keychainAccount)
+            UserDefaults.standard.removeObject(forKey: "openai_api_key")
+        } else {
+            self.apiKey = ""
+        }
     }
     
     var hasValidKey: Bool {
-        return !apiKey.trimmingCharacters(in: .whitespaces).isEmpty
+        return !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
+    
+    private static let keychainService = "com.antonkulikov.writely"
+    private static let keychainAccount = "openai_api_key"
 }
