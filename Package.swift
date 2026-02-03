@@ -2,22 +2,22 @@
 import PackageDescription
 
 let package = Package(
-    name: "Writely",
+    name: "McWritely",
     platforms: [
         .macOS(.v14)
     ],
     products: [
-        .executable(name: "Writely", targets: ["Writely"])
+        .executable(name: "McWritely", targets: ["McWritely"])
     ],
     dependencies: [],
     targets: [
         .executableTarget(
-            name: "Writely",
-            path: "Sources/Writely"
+            name: "McWritely",
+            path: "Sources/McWritely"
         ),
         .testTarget(
-            name: "WritelyTests",
-            dependencies: ["Writely"]
+            name: "McWritelyTests",
+            dependencies: ["McWritely"]
         )
     ]
 )
