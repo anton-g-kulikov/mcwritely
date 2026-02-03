@@ -1,23 +1,23 @@
-# Writely
+# McWritely
 
-Writely is a lightweight macOS utility that provides AI-powered writing assistance in any application. It captures your selected text, refines it using OpenAI, and lets you replace the original text with a much better version instantly.
+McWritely is a lightweight macOS utility that provides AI-powered writing assistance in any application. It captures your selected text, refines it using OpenAI, and lets you replace the original text with a much better version instantly.
 
 ## 🚀 How it works
 
 1.  **Select**: Highlight text in any app (Slack, Browser, Mail, etc.).
 2.  **Trigger**: Press **`Cmd + Opt + Shift + G`**.
-3.  **Refine**: Writely captures the selection and shows a floating panel with an improved version.
+3.  **Refine**: McWritely captures the selection and shows a floating panel with an improved version.
 4.  **Applied**: Click **"Apply"** to replace the original text with the AI suggestion.
 
 ## 🛠 Setup
 
-1.  **API Key**: Open Writely, go to **Settings** (click the menu bar icon or press `Cmd + ,`), and enter your OpenAI API Key. Your key is stored locally in macOS Keychain.
-2.  **Permissions**: Writely requires **Accessibility** permissions to capture and replace text in other apps, and **Input Monitoring** permissions for the global hotkey.
+1.  **API Key**: Open McWritely, go to **Settings** (click the menu bar icon or press `Cmd + ,`), and enter your OpenAI API Key. Your key is stored locally in macOS Keychain.
+2.  **Permissions**: McWritely requires **Accessibility** permissions to capture and replace text in other apps, and **Input Monitoring** permissions for the global hotkey.
     - Go to **System Settings > Privacy & Security > Accessibility**.
-    - Add and enable **Writely**.
+    - Add and enable **McWritely**.
     - Go to **System Settings > Privacy & Security > Input Monitoring**.
-    - Add and enable **Writely**.
-    - You can also initiate permission prompts from the Writely Settings window.
+    - Add and enable **McWritely**.
+    - You can also initiate permission prompts from the McWritely Settings window.
 
 ## 📦 Installation & Distribution
 
@@ -27,28 +27,28 @@ You can build the app from source or create a portable DMG package.
 ```bash
 ./build.sh
 ```
-This creates `Writely.app` in the root directory.
+This creates `McWritely.app` in the root directory.
 
 ### Create a DMG
 ```bash
 ./package.sh
 ```
-This generates `Writely.dmg` for easy distribution and installation.
+This generates `McWritely.dmg` for easy distribution and installation.
 
 ## 💡 Troubleshooting
 
 ### "The application can't be opened"
-If you see this error when trying to open Writely on another computer, it is usually because macOS has flagged the app as quarantined since it was downloaded from the internet and is unsigned.
+If you see this error when trying to open McWritely on another computer, it is usually because macOS has flagged the app as quarantined since it was downloaded from the internet and is unsigned.
 
 **Solution 1 (Recommended):**
-1.  **Right-click** (or Control-click) the `Writely` app icon.
+1.  **Right-click** (or Control-click) the `McWritely` app icon.
 2.  Select **Open** from the menu.
 3.  In the dialog that appears, click **Open** again. This bypasses Gatekeeper for this specific app.
 
 **Solution 2 (Terminal):**
 Run the following command in Terminal to clear the quarantine flag:
 ```bash
-xattr -cr /Applications/Writely.app
+xattr -cr /Applications/McWritely.app
 ```
 
 ### Apple Silicon Build
@@ -56,7 +56,7 @@ The `package.sh` script builds the app for **Apple Silicon** (M1, M2, M3, M4) Ma
 
 ## ⚙️ Customization
 
-If you want to customize Writely's behavior, you can modify the following in `Sources/Writely/OpenAIService.swift`:
+If you want to customize McWritely's behavior, you can modify the following in `Sources/McWritely/OpenAIService.swift`:
 
 ### Change the Model
 Update the `model` property (default: `gpt-4o-mini`):
@@ -94,3 +94,11 @@ Focus on making the text more descriptive and evocative.
 Using `gpt-4o-mini`, the cost is extremely low:
 - 100,000 words ≈ $0.50
 - 1,000,000 words ≈ $5.00
+
+## 📄 License
+
+This project is licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/).
+
+- **As is**: Shipped "as is" without warranty.
+- **Modifications**: All modifications are allowed.
+- **Commercial**: Commercial usage is **not allowed**.
