@@ -49,10 +49,8 @@ Run the following command in Terminal to clear the quarantine flag:
 xattr -cr /Applications/Writely.app
 ```
 
-### Universal Binary
-The `package.sh` script now builds a **Universal Binary**. This means the app works natively on both:
-- **Apple Silicon** (M1, M2, M3, M4)
-- **Intel** processors
+### Apple Silicon Build
+The `package.sh` script builds the app for **Apple Silicon** (M1, M2, M3, M4) Macs. Intel-based Macs are not supported by the default build script.
 
 ## ⚙️ Customization
 

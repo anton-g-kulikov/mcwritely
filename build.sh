@@ -5,22 +5,14 @@ set -e
 
 echo "🚀 Building Writely..."
 
-echo "🚀 Building Writely (Universal Binary)..."
+echo "🚀 Building Writely (Apple Silicon)..."
 
-# Build for both architectures
+# Build for arm64
 echo "🏗️  Building for arm64..."
 swift build -c release --triple arm64-apple-macosx
-echo "🏗️  Building for x86_64..."
-swift build -c release --triple x86_64-apple-macosx
 
-# Find the binaries
-ARM_BINARY=".build/arm64-apple-macosx/release/Writely"
-X64_BINARY=".build/x86_64-apple-macosx/release/Writely"
-BINARY_PATH="Writely_universal"
-
-# Create Universal Binary
-echo "🧬 Merging into Universal Binary..."
-lipo -create -output "$BINARY_PATH" "$ARM_BINARY" "$X64_BINARY"
+# Find the binary
+BINARY_PATH=".build/arm64-apple-macosx/release/Writely"
 
 # Create .app structure
 APP_NAME="Writely.app"
@@ -48,7 +40,6 @@ fi
 
 # Copy binary and plist
 cp "$BINARY_PATH" "$APP_NAME/Contents/MacOS/Writely"
-rm "$BINARY_PATH"
 cp Info.plist "$APP_NAME/Contents/Info.plist"
 
 echo "✅ App Bundle created: $APP_NAME"
