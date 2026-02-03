@@ -1,5 +1,10 @@
 # <img src="icon.png" width="64" valign="middle"> McWritely
 
+![Swift 5.9](https://img.shields.io/badge/Swift-5.9-orange.svg)
+![macOS 14.0+](https://img.shields.io/badge/platform-macOS%2014.0%2B-blue.svg)
+![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)
+![Version](https://img.shields.io/badge/version-1.2-green.svg)
+
 McWritely is a lightweight macOS utility that provides AI-powered writing assistance in any application. It captures your selected text, refines it using OpenAI, and lets you replace the original text with a much better version instantly.
 
 ## 🚀 How it works
@@ -104,14 +109,10 @@ McWritely is designed with privacy and security in mind:
 - **Privacy First**: McWritely only processes text you explicitly select and submit. It does not monitor your keystrokes or background activity.
 
 ## 🤝 Contributing
-Please follow these simple steps:
 
-- **Fork & branch**: Fork the repo and create a branch named `feat/` or `fix/` with a short description.
-- **Build & test**: Run `./build.sh` to build and `./test.sh` to run tests locally.
-- **Style**: Follow existing Swift style and keep changes focused and small.
-- **Commit messages**: Use conventional commits (e.g., `feat:`, `fix:`, `docs:`).
-- **Pull request**: Open a PR against `main` with a clear description and link any related issues.
-- **Discussion**: For questions or larger changes, open an issue first to discuss the design.
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to get started.
+
+For major changes, please open an issue first to discuss what you would like to change.
 
 ## 📄 License
 
