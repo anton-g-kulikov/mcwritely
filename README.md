@@ -11,11 +11,13 @@ Writely is a lightweight macOS utility that provides AI-powered writing assistan
 
 ## 🛠 Setup
 
-1.  **API Key**: Open Writely, go to **Settings** (click the menu bar icon or press `Cmd + ,`), and enter your OpenAI API Key.
-2.  **Permissions**: Writely requires **Accessibility** permissions to capture and replace text in other apps.
+1.  **API Key**: Open Writely, go to **Settings** (click the menu bar icon or press `Cmd + ,`), and enter your OpenAI API Key. Your key is stored locally in macOS Keychain.
+2.  **Permissions**: Writely requires **Accessibility** permissions to capture and replace text in other apps, and **Input Monitoring** permissions for the global hotkey.
     - Go to **System Settings > Privacy & Security > Accessibility**.
     - Add and enable **Writely**.
-    - You can also initiate this from the Writely Settings window.
+    - Go to **System Settings > Privacy & Security > Input Monitoring**.
+    - Add and enable **Writely**.
+    - You can also initiate permission prompts from the Writely Settings window.
 
 ## 📦 Installation & Distribution
 

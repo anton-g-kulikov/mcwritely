@@ -9,7 +9,7 @@ struct SettingsView: View {
                 SecureField("API Key", text: $settings.apiKey)
                     .textFieldStyle(.roundedBorder)
                 
-                Text("Your key is stored locally in macOS Keychain/UserDefaults.")
+                Text("Your key is stored locally in macOS Keychain.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -27,6 +27,23 @@ struct SettingsView: View {
                         }
                     }
                 }
+                
+                HStack {
+                    Text("Input Monitoring")
+                    Spacer()
+                    if AccessibilityManager.shared.checkInputMonitoringPermissions() {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                    } else {
+                        Button("Request Access") {
+                            _ = AccessibilityManager.shared.checkInputMonitoringPermissions(prompt: true)
+                        }
+                    }
+                }
+                
+                Text("Input Monitoring is required for the global hotkey to work.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         }
         .padding()
