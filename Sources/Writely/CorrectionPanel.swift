@@ -15,7 +15,7 @@ class CorrectionPanel: NSPanel {
         self.isFloatingPanel = true
         self.level = .floating
         self.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
-        self.hasShadow = false
+        self.hasShadow = true
         self.isMovableByWindowBackground = true
         self.contentView = contentView
     }
