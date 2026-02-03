@@ -117,8 +117,8 @@ struct CorrectionView: View {
         .frame(width: 420) // Slightly wider for multiline text
         .background {
             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .shadow(color: .black.opacity(0.15), radius: 20, x: 0, y: 10)
+                .fill(Color.white)
+                .shadow(color: .black.opacity(0.2), radius: 28, x: 0, y: 14)
         }
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .padding(20) // Outer padding for shadow clearance
