@@ -1,38 +1,48 @@
 # Writely
 
-Writely is a lightweight macOS menu bar utility that provides AI-powered writing assistance in any application.
+Writely is a lightweight macOS utility that provides AI-powered writing assistance in any application. It captures your selected text, refines it using OpenAI, and lets you replace the original text with a much better version instantly.
 
-## How it works
-1. **Selection**: Select text in any app (Slack, Email, Browser, etc.).
-2. **Review**: Click the Writely icon in your Menu Bar.
-3. **Correct**: Writely sends the text to OpenAI (`gpt-4o-mini`).
-4. **Apply**: Review the suggestion and click "Apply" to replace your selection automatically.
+## 🚀 How it works
 
-## Setup
-1. **API Key**: Run the app, go to **Settings**, and enter your OpenAI API Key.
-2. **Permissions**: Go to **System Settings > Privacy & Security > Accessibility** and add/enable Writely. 
-   - You can also click "Request Access" in the Writely Settings window.
+1.  **Select**: Highlight text in any app (Slack, Browser, Mail, etc.).
+2.  **Trigger**: Press **`Cmd + Opt + Shift + G`**.
+3.  **Refine**: Writely captures the selection and shows a floating panel with an improved version.
+4.  **Applied**: Click **"Apply"** to replace the original text with the AI suggestion.
 
-## Building from source
-Run the included build script:
+## 🛠 Setup
+
+1.  **API Key**: Open Writely, go to **Settings** (click the menu bar icon or press `Cmd + ,`), and enter your OpenAI API Key.
+2.  **Permissions**: Writely requires **Accessibility** permissions to capture and replace text in other apps.
+    - Go to **System Settings > Privacy & Security > Accessibility**.
+    - Add and enable **Writely**.
+    - You can also initiate this from the Writely Settings window.
+
+## 📦 Installation & Distribution
+
+You can build the app from source or create a portable DMG package.
+
+### Build Locally
 ```bash
-chmod +x build.sh
 ./build.sh
 ```
+This creates `Writely.app` in the root directory.
 
-## Running
-After building, run the binary:
+### Create a DMG
 ```bash
-.build/release/Writely
+./package.sh
 ```
-## To clear the app from the menu bar
-```bash
-cp -R /Users/antonkulikov/Projects/writely/Writely.app /Applications/
-```
+This generates `Writely.dmg` for easy distribution and installation.
 
-## Costs
-Using `gpt-4o-mini`, the cost is extremely low.
-- 100,000 words ~ $0.50
-- 1,000,000 words ~ $5.00
-Your budget of $144/year is more than enough for professional-level daily use.
+## ⚙️ Technical Details
+
+- **ML Backend**: Powered by OpenAI (`gpt-4o-mini`).
+- **Hotkey**: `Cmd + Opt + Shift + G` (Global).
+- **Efficiency**: Written in Swift for minimal memory footprint.
+
+## 💰 Costs
+
+Using `gpt-4o-mini`, the cost is extremely low:
+- 100,000 words ≈ $0.50
+- 1,000,000 words ≈ $5.00
+Your budget of $144/year is more than enough for heavy professional use.
 
