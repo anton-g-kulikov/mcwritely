@@ -14,9 +14,48 @@ class OpenAIService {
         self.apiKey = apiKey
     }
     
+    // MARK: - Models
+    
+    struct OpenAIRequest: Codable {
+        let model: String
+        let messages: [Message]
+        let temperature: Double
+        
+        struct Message: Codable {
+            let role: String
+            let content: String
+        }
+    }
+    
+    struct OpenAIResponse: Codable {
+        struct Choice: Codable {
+            struct Message: Codable {
+                let content: String
+            }
+            let message: Message
+        }
+        let choices: [Choice]
+    }
+    
+    enum OpenAIError: LocalizedError {
+        case invalidURL
+        case apiError(String)
+        case parsingError
+        case noContent
+        
+        var errorDescription: String? {
+            switch self {
+            case .invalidURL: return "Invalid API URL"
+            case .apiError(let msg): return "API Error: \(msg)"
+            case .parsingError: return "Failed to parse response"
+            case .noContent: return "API returned no content"
+            }
+        }
+    }
+    
     func correctText(_ text: String) async throws -> String {
         guard let url = URL(string: "https://api.openai.com/v1/chat/completions") else {
-            throw NSError(domain: "OpenAIService", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+            throw OpenAIError.invalidURL
         }
         
         var request = URLRequest(url: url)
@@ -24,41 +63,32 @@ class OpenAIService {
         request.setValue("Application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         
-        request.httpBody = try buildRequestBody(userText: text)
+        let requestBody = OpenAIRequest(
+            model: model,
+            messages: [
+                .init(role: "system", content: systemPrompt),
+                .init(role: "user", content: text)
+            ],
+            temperature: 0.3
+        )
+        
+        request.httpBody = try JSONEncoder().encode(requestBody)
         
         let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
             let errorMsg = String(data: data, encoding: .utf8) ?? "Unknown error"
-            throw NSError(domain: "OpenAIService", code: 1, userInfo: [NSLocalizedDescriptionKey: "API Error: \(errorMsg)"])
+            throw OpenAIError.apiError(errorMsg)
         }
         
-        return try Self.parseResponse(data)
-    }
-    
-    func buildRequestBody(userText: String) throws -> Data {
-        let body: [String: Any] = [
-            "model": model,
-            "messages": [
-                ["role": "system", "content": systemPrompt],
-                ["role": "user", "content": userText]
-            ],
-            "temperature": 0.3
-        ]
-        
-        return try JSONSerialization.data(withJSONObject: body)
-    }
-    
-    static func parseResponse(_ data: Data) throws -> String {
-        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-        let choices = json?["choices"] as? [[String: Any]]
-        let message = choices?.first?["message"] as? [String: Any]
-        let content = message?["content"] as? String
-        
-        guard let result = content?.trimmingCharacters(in: .whitespacesAndNewlines), !result.isEmpty else {
-            throw NSError(domain: "OpenAIService", code: 2, userInfo: [NSLocalizedDescriptionKey: "Failed to parse response"])
+        do {
+            let decodedResponse = try JSONDecoder().decode(OpenAIResponse.self, from: data)
+            guard let content = decodedResponse.choices.first?.message.content.trimmingCharacters(in: .whitespacesAndNewlines), !content.isEmpty else {
+                throw OpenAIError.noContent
+            }
+            return content
+        } catch {
+            throw OpenAIError.parsingError
         }
-        
-        return result
     }
 }
