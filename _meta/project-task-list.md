@@ -2,10 +2,14 @@
 
 ## Current Tasks
 
+- [x] **CORE-TASK-019: Remove force unwraps in AccessibilityManager** - ✅ **COMPLETED** - Replace force unwraps with safe optional binding to prevent crashes
+- [x] **API-TASK-020: Refactor OpenAIService to use Codable** - ✅ **COMPLETED** - Replace JSONSerialization with native Swift Codable structs
+- [x] **API-TASK-021: Implement idiomatic OpenAIError enum** - ✅ **COMPLETED** - Replace generic NSError with strongly typed OpenAIError
+- [x] **RELEASE-TASK-022: Bump version to 1.2 and commit changes** - ✅ **COMPLETED** - Bump version in Info.plist and create granular commits
+- [x] **DOC-TASK-018: Update Documentation with Security Findings** - ✅ **COMPLETED** - Add security notes to README based on review
+- [x] **CORE-TASK-017: Conduct Codebase Review (Security & Best Practices)** - ✅ **COMPLETED** - Reviewing codebase for security and style compliance
 - [x] **DOC-TASK-014: Add CC BY-NC 4.0 license information to README** - ✅ **COMPLETED** - Added license link and terms as requested
-
 - [x] **DOC-TASK-013: Update test documentation and define test cases** - ✅ **COMPLETED** - Aligned test documentation with Swift/XCTest and documented current/planned tests
-
 - [x] **DOC-TASK-016: Add app icon to README.md** - ✅ **COMPLETED** - Included the new mustache pencil icon in the project documentation.
 - [x] **UI-TASK-015: Generate and implement new "McWritely" app icon** - ✅ **COMPLETED** - Created a pencil with a mustache icon and updated the app bundle.
 - [x] **CONFIG-TASK-013: Rename project from Writely to McWritely** - ✅ **COMPLETED** - Updated all project assets, documentation, and source code.
