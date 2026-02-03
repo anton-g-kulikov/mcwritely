@@ -9,44 +9,44 @@
 ### CORE
 - [x] **CORE-TASK-001: Initial project architecture and structure** - ✅ **COMPLETED** - Initial setup of the McWritely Swift project
 - [x] **CORE-TASK-002: Implement accessibility-based selection capture and replacement** - ✅ **COMPLETED** - Core logic for interacting with other applications
-- [x] **CORE-TASK-007: Implement asynchronous capture/replacement and clipboard safety** - ✅ **COMPLETED** - Improving reliability and user experience
-- [x] **CORE-TASK-012: Implement unit tests and test runner script** - ✅ **COMPLETED** - Added XCTest targets and helper scripts for verification
-- [x] **CORE-TASK-017: Conduct Codebase Review (Security & Best Practices)** - ✅ **COMPLETED** - Reviewing codebase for security and style compliance
-- [x] **CORE-TASK-019: Remove force unwraps in AccessibilityManager** - ✅ **COMPLETED** - Replace force unwraps with safe optional binding to prevent crashes
+- [x] **CORE-TASK-003: Implement asynchronous capture/replacement and clipboard safety** - ✅ **COMPLETED** - Improving reliability and user experience
+- [x] **CORE-TASK-004: Implement unit tests and test runner script** - ✅ **COMPLETED** - Added XCTest targets and helper scripts for verification
+- [x] **CORE-TASK-005: Conduct Codebase Review (Security & Best Practices)** - ✅ **COMPLETED** - Reviewing codebase for security and style compliance
+- [x] **CORE-TASK-006: Remove force unwraps in AccessibilityManager** - ✅ **COMPLETED** - Replace force unwraps with safe optional binding to prevent crashes
 
 ### API
-- [x] **API-TASK-004: Integrate OpenAI GPT-4o-mini for writing assistance** - ✅ **COMPLETED** - Backend service for text refinement
-- [x] **API-TASK-020: Refactor OpenAIService to use Codable** - ✅ **COMPLETED** - Replace JSONSerialization with native Swift Codable structs
-- [x] **API-TASK-021: Implement idiomatic OpenAIError enum** - ✅ **COMPLETED** - Replace generic NSError with strongly typed OpenAIError
+- [x] **API-TASK-001: Integrate OpenAI GPT-4o-mini for writing assistance** - ✅ **COMPLETED** - Backend service for text refinement
+- [x] **API-TASK-002: Refactor OpenAIService to use Codable** - ✅ **COMPLETED** - Replace JSONSerialization with native Swift Codable structs
+- [x] **API-TASK-003: Implement idiomatic OpenAIError enum** - ✅ **COMPLETED** - Replace generic NSError with strongly typed OpenAIError
 
 ### UI
-- [x] **UI-TASK-008: Implement Settings UI for API keys and permissions** - ✅ **COMPLETED** - User-facing configuration interface
-- [x] **UI-TASK-010: Refine UI aesthetics (window shadows, alignment)** - ✅ **COMPLETED** - Polishing the application interface
-- [x] **UI-TASK-015: Generate and implement new "McWritely" app icon** - ✅ **COMPLETED** - Created a pencil with a mustache icon and updated the app bundle.
+- [x] **UI-TASK-001: Implement Settings UI for API keys and permissions** - ✅ **COMPLETED** - User-facing configuration interface
+- [x] **UI-TASK-002: Refine UI aesthetics (window shadows, alignment)** - ✅ **COMPLETED** - Polishing the application interface
+- [x] **UI-TASK-003: Generate and implement new "McWritely" app icon** - ✅ **COMPLETED** - Created a pencil with a mustache icon and updated the app bundle.
 
 ### AUTH
-- [x] **AUTH-TASK-003: Implement secure API key storage using macOS Keychain** - ✅ **COMPLETED** - Secure storage for user credentials
+- [x] **AUTH-TASK-001: Implement secure API key storage using macOS Keychain** - ✅ **COMPLETED** - Secure storage for user credentials
 
 ### UTIL
-- [x] **UTIL-TASK-009: Add clipboard retention toggle for user control** - ✅ **COMPLETED** - New feature for clipboard management
+- [x] **UTIL-TASK-001: Add clipboard retention toggle for user control** - ✅ **COMPLETED** - New feature for clipboard management
 
 ### CONFIG
-- [x] **CONFIG-TASK-005: Develop build and DMG packaging scripts** - ✅ **COMPLETED** - Automation for building and distribution
-- [x] **CONFIG-TASK-013: Rename project from Writely to McWritely** - ✅ **COMPLETED** - Updated all project assets, documentation, and source code.
-- [x] **CONFIG-TASK-026: Implement GitHub Actions for build verification** - ✅ **COMPLETED** - Add CI workflow for automated builds
+- [x] **CONFIG-TASK-001: Develop build and DMG packaging scripts** - ✅ **COMPLETED** - Automation for building and distribution
+- [x] **CONFIG-TASK-002: Rename project from Writely to McWritely** - ✅ **COMPLETED** - Updated all project assets, documentation, and source code.
+- [x] **CONFIG-TASK-003: Implement GitHub Actions for build verification** - ✅ **COMPLETED** - Add CI workflow for automated builds
 
 ### DOC
-- [x] **DOC-TASK-006: Document setup, usage, and customization in README** - ✅ **COMPLETED** - Comprehensive user and developer documentation
-- [x] **DOC-TASK-013: Update test documentation and define test cases** - ✅ **COMPLETED** - Aligned test documentation with Swift/XCTest and documented current/planned tests
-- [x] **DOC-TASK-014: Add CC BY-NC 4.0 license information to README** - ✅ **COMPLETED** - Added license link and terms as requested
-- [x] **DOC-TASK-016: Add app icon to README.md** - ✅ **COMPLETED** - Included the new mustache pencil icon in the project documentation.
-- [x] **DOC-TASK-018: Update Documentation with Security Findings** - ✅ **COMPLETED** - Add security notes to README based on review
-- [x] **DOC-TASK-023: Add Shields.io badges (Swift, macOS, License) to README** - ✅ **COMPLETED** - Add "flare" to the top of README
-- [x] **DOC-TASK-024: Extract CONTRIBUTING.md and initialize CHANGELOG.md** - ✅ **COMPLETED** - Standardize project documentation
+- [x] **DOC-TASK-001: Document setup, usage, and customization in README** - ✅ **COMPLETED** - Comprehensive user and developer documentation
+- [x] **DOC-TASK-002: Update test documentation and define test cases** - ✅ **COMPLETED** - Aligned test documentation with Swift/XCTest and documented current/planned tests
+- [x] **DOC-TASK-003: Add CC BY-NC 4.0 license information to README** - ✅ **COMPLETED** - Added license link and terms as requested
+- [x] **DOC-TASK-004: Add app icon to README.md** - ✅ **COMPLETED** - Included the new mustache pencil icon in the project documentation.
+- [x] **DOC-TASK-005: Update Documentation with Security Findings** - ✅ **COMPLETED** - Add security notes to README based on review
+- [x] **DOC-TASK-006: Add Shields.io badges (Swift, macOS, License) to README** - ✅ **COMPLETED** - Add "flare" to the top of README
+- [x] **DOC-TASK-007: Extract CONTRIBUTING.md and initialize CHANGELOG.md** - ✅ **COMPLETED** - Standardize project documentation
 
 ### RELEASE
-- [x] **RELEASE-TASK-022: Bump version to 1.2 and commit changes** - ✅ **COMPLETED** - Bump version in Info.plist and create granular commits
-- [x] **RELEASE-TASK-025: Tag v1.2 and establish release process** - ✅ **COMPLETED** - Create git tag and define release workflow
+- [x] **RELEASE-TASK-001: Bump version to 1.2 and commit changes** - ✅ **COMPLETED** - Bump version in Info.plist and create granular commits
+- [x] **RELEASE-TASK-002: Tag v1.2 and establish release process** - ✅ **COMPLETED** - Create git tag and define release workflow
 
 ## Task Status Legend
 
