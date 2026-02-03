@@ -3,19 +3,19 @@
 # Exit on error
 set -e
 
-echo "🚀 Building Writely..."
+echo "🚀 Building McWritely..."
 
-echo "🚀 Building Writely (Apple Silicon)..."
+echo "🚀 Building McWritely (Apple Silicon)..."
 
 # Build for arm64
 echo "🏗️  Building for arm64..."
 swift build -c release --triple arm64-apple-macosx
 
 # Find the binary
-BINARY_PATH=".build/arm64-apple-macosx/release/Writely"
+BINARY_PATH=".build/arm64-apple-macosx/release/McWritely"
 
 # Create .app structure
-APP_NAME="Writely.app"
+APP_NAME="McWritely.app"
 mkdir -p "$APP_NAME/Contents/MacOS"
 mkdir -p "$APP_NAME/Contents/Resources"
 
@@ -39,7 +39,7 @@ if [ -f "icon.png" ]; then
 fi
 
 # Copy binary and plist
-cp "$BINARY_PATH" "$APP_NAME/Contents/MacOS/Writely"
+cp "$BINARY_PATH" "$APP_NAME/Contents/MacOS/McWritely"
 cp Info.plist "$APP_NAME/Contents/Info.plist"
 
 echo "✅ App Bundle created: $APP_NAME"

@@ -3,7 +3,7 @@
 # Exit on error
 set -e
 
-APP_NAME="Writely"
+APP_NAME="McWritely"
 APP_BUNDLE="$APP_NAME.app"
 DMG_NAME="$APP_NAME.dmg"
 VOLUME_NAME="$APP_NAME Installer"
