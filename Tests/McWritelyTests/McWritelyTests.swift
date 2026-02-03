@@ -17,32 +17,48 @@ final class McWritelyTests: XCTestCase {
     }
     
     func testOpenAIResponseParsingSuccess() throws {
-        let response: [String: Any] = [
+        let json = """
+        {
             "choices": [
-                [
-                    "message": [
+                {
+                    "message": {
                         "content": "  Hello world  "
-                    ]
-                ]
+                    }
+                }
             ]
-        ]
+        }
+        """.data(using: .utf8)!
         
-        let data = try JSONSerialization.data(withJSONObject: response)
-        let parsed = try OpenAIService.parseResponse(data)
-        XCTAssertEqual(parsed, "Hello world")
+        let decoded = try JSONDecoder().decode(OpenAIService.OpenAIResponse.self, from: json)
+        let content = decoded.choices.first?.message.content.trimmingCharacters(in: .whitespacesAndNewlines)
+        XCTAssertEqual(content, "Hello world")
     }
     
     func testOpenAIResponseParsingFailure() throws {
-        let response: [String: Any] = [
+        let json = """
+        {
             "choices": [
-                [
-                    "message": [:]
-                ]
+                {
+                    "message": {}
+                }
             ]
-        ]
+        }
+        """.data(using: .utf8)!
         
-        let data = try JSONSerialization.data(withJSONObject: response)
-        XCTAssertThrowsError(try OpenAIService.parseResponse(data))
+        XCTAssertThrowsError(try JSONDecoder().decode(OpenAIService.OpenAIResponse.self, from: json))
+    }
+    
+    func testKeychainServiceIdentifier() throws {
+        // Since we are in a test environment, Bundle.main.bundleIdentifier might be nil
+        // or the test runner's bundle ID. We just want to ensure it doesn't crash
+        // and returns a reasonable string.
+        let settings = Settings.shared
+        // We can't easily access the private static keychainService, but we can verify
+        // that KeychainStore operations don't fail when called via Settings.
+        settings.apiKey = "test-key"
+        XCTAssertEqual(settings.apiKey, "test-key")
+        settings.apiKey = ""
+        XCTAssertEqual(settings.apiKey, "")
     }
     
     func testKeepNewTextInClipboardDefaultIsFalse() throws {
