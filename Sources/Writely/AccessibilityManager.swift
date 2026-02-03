@@ -55,6 +55,8 @@ class AccessibilityManager {
             return nil
         }
         
+        _ = await ensureAppIsFrontmost(finalApp)
+        
         print("Writely: Attempting capture from \(finalApp.localizedName ?? "Unknown App") (\(finalApp.bundleIdentifier ?? "no-id"))")
         
         let appElement = AXUIElementCreateApplication(finalApp.processIdentifier)
@@ -94,6 +96,7 @@ class AccessibilityManager {
         let pasteboard = NSPasteboard.general
         let originalItems = snapshotPasteboardItems(pasteboard)
         let originalChangeCount = pasteboard.changeCount
+        _ = await ensureAppIsFrontmost(finalApp)
         simulateCopy()
         
         // Delay for clipboard synchronization
@@ -144,7 +147,8 @@ class AccessibilityManager {
         
         // Fallback: Paste
         print("Writely: AX Write failed, trying Paste fallback...")
-        guard isTargetAppFrontmost(target) else {
+        guard await ensureTargetAppFrontmost(target) else {
+            print("Writely: Target app not frontmost, paste cancelled.")
             return false
         }
         
@@ -155,10 +159,18 @@ class AccessibilityManager {
         pasteboard.setString(correctedText, forType: .string)
         
         // Give macOS a moment to restore focus to target app
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        try? await Task.sleep(nanoseconds: 150_000_000)
         simulatePaste()
-        try? await Task.sleep(nanoseconds: 200_000_000)
-        restorePasteboardItems(pasteboard, items: originalItems)
+        
+        // Retry paste once after re-activating, for apps that ignore the first Cmd+V
+        try? await Task.sleep(nanoseconds: 150_000_000)
+        if await ensureTargetAppFrontmost(target) {
+            simulatePaste()
+        }
+
+        if !Settings.shared.keepNewTextInClipboard {
+            restorePasteboardItems(pasteboard, items: originalItems)
+        }
         return true
     }
     
@@ -196,6 +208,30 @@ class AccessibilityManager {
             return false
         }
         return frontmost.processIdentifier == target.appPID
+    }
+    
+    @MainActor
+    private func ensureTargetAppFrontmost(_ target: CaptureTarget) async -> Bool {
+        if isTargetAppFrontmost(target) {
+            return true
+        }
+        guard let app = NSRunningApplication(processIdentifier: target.appPID) else {
+            return false
+        }
+        return await ensureAppIsFrontmost(app)
+    }
+    
+    @MainActor
+    private func ensureAppIsFrontmost(_ app: NSRunningApplication) async -> Bool {
+        if app.isActive {
+            return true
+        }
+        let activated = app.activate(options: [.activateAllWindows])
+        if activated {
+            try? await Task.sleep(nanoseconds: 150_000_000)
+            return app.isActive
+        }
+        return false
     }
     
     private func snapshotPasteboardItems(_ pasteboard: NSPasteboard) -> [NSPasteboardItem] {

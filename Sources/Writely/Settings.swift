@@ -14,6 +14,12 @@ class Settings: ObservableObject {
         }
     }
     
+    @Published var keepNewTextInClipboard: Bool {
+        didSet {
+            UserDefaults.standard.set(keepNewTextInClipboard, forKey: "keep_new_text_in_clipboard")
+        }
+    }
+    
     private init() {
         if let storedKey = KeychainStore.shared.read(service: Self.keychainService, account: Self.keychainAccount) {
             self.apiKey = storedKey
@@ -24,6 +30,8 @@ class Settings: ObservableObject {
         } else {
             self.apiKey = ""
         }
+        
+        self.keepNewTextInClipboard = UserDefaults.standard.object(forKey: "keep_new_text_in_clipboard") as? Bool ?? false
     }
     
     var hasValidKey: Bool {

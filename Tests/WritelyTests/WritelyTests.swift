@@ -44,4 +44,12 @@ final class WritelyTests: XCTestCase {
         let data = try JSONSerialization.data(withJSONObject: response)
         XCTAssertThrowsError(try OpenAIService.parseResponse(data))
     }
+    
+    func testKeepNewTextInClipboardDefaultIsFalse() throws {
+        let settings = Settings.shared
+        let original = settings.keepNewTextInClipboard
+        settings.keepNewTextInClipboard = false
+        XCTAssertFalse(settings.keepNewTextInClipboard)
+        settings.keepNewTextInClipboard = original
+    }
 }
