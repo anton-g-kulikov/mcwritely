@@ -9,6 +9,10 @@ class HotkeyManager {
     private init() {}
     
     func startMonitoring(onTrigger: @escaping (CaptureTarget?) -> Void) {
+        if !AccessibilityManager.shared.checkInputMonitoringPermissions() {
+            print("Writely: Input Monitoring permission not granted. Hotkey may not work.")
+        }
+        
         // Shift + Option + Cmd + G
         // Modifiers: command (1 << 20), option (1 << 19), shift (1 << 17)
         // Key code for 'G' is 5
@@ -18,16 +22,15 @@ class HotkeyManager {
             let expectedModifiers: NSEvent.ModifierFlags = [.command, .option, .shift]
             
             if modifiers == expectedModifiers && event.keyCode == 5 {
-                DispatchQueue.main.async {
-                    // Start capture immediately while target app still has focus
-                    if let target = AccessibilityManager.shared.captureSelectedText() {
-                        onTrigger(target)
-                    } else {
-                        // Still trigger to show the error in the popover
-                        onTrigger(nil)
-                    }
+                Task { @MainActor in
+                    let target = await AccessibilityManager.shared.captureSelectedText()
+                    onTrigger(target)
                 }
             }
+        }
+        
+        if monitor == nil {
+            print("Writely: Failed to register global hotkey monitor.")
         }
     }
     

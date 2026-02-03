@@ -5,6 +5,8 @@ import AppKit
 struct CaptureTarget {
     let element: AXUIElement
     let appName: String
+    let appPID: pid_t
+    let bundleIdentifier: String?
     let selectedText: String
 }
 
@@ -21,7 +23,15 @@ class AccessibilityManager {
         return AXIsProcessTrusted()
     }
     
-    func captureSelectedText() -> CaptureTarget? {
+    func checkInputMonitoringPermissions(prompt: Bool = false) -> Bool {
+        if prompt {
+            return CGRequestListenEventAccess()
+        }
+        return CGPreflightListenEventAccess()
+    }
+    
+    @MainActor
+    func captureSelectedText() async -> CaptureTarget? {
         let apps = NSWorkspace.shared.runningApplications
         var targetApp: NSRunningApplication?
         
@@ -51,7 +61,7 @@ class AccessibilityManager {
         var focusedElement: AnyObject?
         let result = AXUIElementCopyAttributeValue(appElement, kAXFocusedUIElementAttribute as CFString, &focusedElement)
         
-        guard result == .success, let element = focusedElement as! AXUIElement? else {
+        guard result == .success, let element = focusedElement as? AXUIElement else {
             print("Writely: Could not find focused element in \(finalApp.localizedName ?? "app")")
             return nil
         }
@@ -61,21 +71,44 @@ class AccessibilityManager {
         let textResult = AXUIElementCopyAttributeValue(element, kAXSelectedTextAttribute as CFString, &selectedText)
         
         if textResult == .success, let text = selectedText as? String, !text.isEmpty {
-            return CaptureTarget(element: element, appName: finalApp.localizedName ?? "Active App", selectedText: text)
+            return CaptureTarget(
+                element: element,
+                appName: finalApp.localizedName ?? "Active App",
+                appPID: finalApp.processIdentifier,
+                bundleIdentifier: finalApp.bundleIdentifier,
+                selectedText: text
+            )
         }
         
         // Fallback: Simulate Cmd+C
         // We MUST ensure the target app stays frontmost for Cmd+C to work
         print("Writely: AX failed, trying Clipboard fallback for \(finalApp.localizedName ?? "app")...")
         
-        let originalClipboard = NSPasteboard.general.string(forType: .string)
+        let pasteboard = NSPasteboard.general
+        let originalItems = snapshotPasteboardItems(pasteboard)
+        let originalChangeCount = pasteboard.changeCount
         simulateCopy()
         
         // Delay for clipboard synchronization
-        Thread.sleep(forTimeInterval: 0.2)
+        try? await Task.sleep(nanoseconds: 200_000_000)
         
-        if let text = NSPasteboard.general.string(forType: .string), !text.isEmpty && text != originalClipboard {
-            return CaptureTarget(element: element, appName: finalApp.localizedName ?? "Active App", selectedText: text)
+        defer {
+            restorePasteboardItems(pasteboard, items: originalItems)
+        }
+        
+        let newChangeCount = pasteboard.changeCount
+        guard newChangeCount != originalChangeCount else {
+            return nil
+        }
+        
+        if let text = pasteboard.string(forType: .string), !text.isEmpty {
+            return CaptureTarget(
+                element: element,
+                appName: finalApp.localizedName ?? "Active App",
+                appPID: finalApp.processIdentifier,
+                bundleIdentifier: finalApp.bundleIdentifier,
+                selectedText: text
+            )
         }
         
         return nil
@@ -93,9 +126,10 @@ class AccessibilityManager {
         cmdUp?.post(tap: .cgAnnotatedSessionEventTap)
     }
     
-    func replaceText(in element: AXUIElement, with correctedText: String) -> Bool {
+    @MainActor
+    func replaceText(in target: CaptureTarget, with correctedText: String) async -> Bool {
         // Try AX first
-        let writeResult = AXUIElementSetAttributeValue(element, kAXSelectedTextAttribute as CFString, correctedText as CFString)
+        let writeResult = AXUIElementSetAttributeValue(target.element, kAXSelectedTextAttribute as CFString, correctedText as CFString)
         
         if writeResult == .success {
             return true
@@ -103,12 +137,21 @@ class AccessibilityManager {
         
         // Fallback: Paste
         print("Writely: AX Write failed, trying Paste fallback...")
-        NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(correctedText, forType: .string)
+        guard isTargetAppFrontmost(target) else {
+            return false
+        }
+        
+        let pasteboard = NSPasteboard.general
+        let originalItems = snapshotPasteboardItems(pasteboard)
+        
+        pasteboard.clearContents()
+        pasteboard.setString(correctedText, forType: .string)
         
         // Give macOS a moment to restore focus to target app
-        Thread.sleep(forTimeInterval: 0.1)
+        try? await Task.sleep(nanoseconds: 100_000_000)
         simulatePaste()
+        try? await Task.sleep(nanoseconds: 200_000_000)
+        restorePasteboardItems(pasteboard, items: originalItems)
         return true
     }
     
@@ -129,10 +172,42 @@ class AccessibilityManager {
         NSWorkspace.shared.open(url)
     }
     
+    func openInputMonitoringSettings() {
+        let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent")!
+        NSWorkspace.shared.open(url)
+    }
+    
     private func getActiveAppName() -> String {
         if let frontmostApp = NSWorkspace.shared.frontmostApplication {
             return frontmostApp.localizedName ?? "Active App"
         }
         return "Unknown App"
+    }
+    
+    private func isTargetAppFrontmost(_ target: CaptureTarget) -> Bool {
+        guard let frontmost = NSWorkspace.shared.frontmostApplication else {
+            return false
+        }
+        return frontmost.processIdentifier == target.appPID
+    }
+    
+    private func snapshotPasteboardItems(_ pasteboard: NSPasteboard) -> [NSPasteboardItem] {
+        guard let items = pasteboard.pasteboardItems else { return [] }
+        return items.compactMap { item in
+            let newItem = NSPasteboardItem()
+            for type in item.types {
+                if let data = item.data(forType: type) {
+                    newItem.setData(data, forType: type)
+                }
+            }
+            return newItem
+        }
+    }
+    
+    private func restorePasteboardItems(_ pasteboard: NSPasteboard, items: [NSPasteboardItem]) {
+        pasteboard.clearContents()
+        if !items.isEmpty {
+            pasteboard.writeObjects(items)
+        }
     }
 }

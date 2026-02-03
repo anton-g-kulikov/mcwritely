@@ -55,8 +55,9 @@ struct CorrectionView: View {
                             
                             Button(action: {
                                 PanelManager.shared.hide()
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    viewModel.applyCorrection()
+                                Task {
+                                    try? await Task.sleep(nanoseconds: 100_000_000)
+                                    await viewModel.applyCorrection()
                                 }
                             }) {
                                 HStack {

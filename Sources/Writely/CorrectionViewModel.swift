@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import Combine
 
 class CorrectionViewModel: ObservableObject {
     @Published var originalText: String = ""
@@ -8,14 +9,18 @@ class CorrectionViewModel: ObservableObject {
     @Published var errorMessage: String? = nil
     @Published var currentTarget: CaptureTarget? = nil
     
-    private let aiService: OpenAIService?
+    private var aiService: OpenAIService?
+    private var cancellables = Set<AnyCancellable>()
     
     init() {
-        if Settings.shared.hasValidKey {
-            self.aiService = OpenAIService(apiKey: Settings.shared.apiKey)
-        } else {
-            self.aiService = nil
-        }
+        updateService(for: Settings.shared.apiKey)
+        
+        Settings.shared.$apiKey
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newKey in
+                self?.updateService(for: newKey)
+            }
+            .store(in: &cancellables)
     }
     
     @MainActor
@@ -29,7 +34,7 @@ class CorrectionViewModel: ObservableObject {
         }
         
         // 2. Use pre-captured target or try to capture now
-        let targetToUse: CaptureTarget? = preCapturedTarget ?? AccessibilityManager.shared.captureSelectedText()
+        let targetToUse: CaptureTarget? = preCapturedTarget ?? await AccessibilityManager.shared.captureSelectedText()
         
         guard let target = targetToUse else {
             if correctedText.isEmpty {
@@ -59,9 +64,10 @@ class CorrectionViewModel: ObservableObject {
         self.isProcessing = false
     }
     
-    func applyCorrection() {
+    @MainActor
+    func applyCorrection() async {
         guard let target = currentTarget else { return }
-        let success = AccessibilityManager.shared.replaceText(in: target.element, with: correctedText)
+        let success = await AccessibilityManager.shared.replaceText(in: target, with: correctedText)
         if !success {
             self.errorMessage = "Failed to replace text. Ensure the app is still focused."
         } else {
@@ -69,6 +75,15 @@ class CorrectionViewModel: ObservableObject {
             self.originalText = ""
             self.correctedText = ""
             self.currentTarget = nil
+        }
+    }
+    
+    private func updateService(for apiKey: String) {
+        let trimmed = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
+            aiService = nil
+        } else {
+            aiService = OpenAIService(apiKey: trimmed)
         }
     }
 }
