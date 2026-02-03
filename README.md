@@ -44,6 +44,16 @@ private let model: String = "gpt-4o"
 ```
 
 ### Custom Instructions
+Current prompt:
+```swift
+let systemPrompt = """
+You are an elite writing assistant. Correct the following text for grammar, spelling, style, and tone. 
+Preserve the original meaning and formatting. 
+If the text is already perfect, return it exactly as is. 
+Only return the corrected text, no explanations.
+"""
+```
+
 You can modify the `systemPrompt` variable to change how the AI refines your text (e.g., to focus on a specific tone or language):
 ```swift
 let systemPrompt = """
