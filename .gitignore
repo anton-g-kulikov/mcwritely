@@ -6,3 +6,4 @@ Generated/
 *.icns
 AppIcon.iconset/
 *.dmg
+.vscode/
