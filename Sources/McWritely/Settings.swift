@@ -38,6 +38,8 @@ class Settings: ObservableObject {
         return !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
     
-    private static let keychainService = "com.antonkulikov.mcwritely"
+    private static var keychainService: String {
+        return Bundle.main.bundleIdentifier ?? "com.antonkulikov.mcwritely"
+    }
     private static let keychainAccount = "openai_api_key"
 }
