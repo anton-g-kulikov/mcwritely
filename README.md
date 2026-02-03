@@ -95,6 +95,14 @@ Using `gpt-4o-mini`, the cost is extremely low:
 - 100,000 words ≈ $0.50
 - 1,000,000 words ≈ $5.00
 
+## 🔒 Security
+
+McWritely is designed with privacy and security in mind:
+
+- **Secure Storage**: Your OpenAI API Key is stored securely in the **macOS Keychain**, not in plain text files.
+- **Direct Communication**: Text is sent directly from your Mac to OpenAI's API via HTTPS. No intermediate servers or third-party analytics are used.
+- **Privacy First**: McWritely only processes text you explicitly select and submit. It does not monitor your keystrokes or background activity.
+
 ## 🤝 Contributing
 Please follow these simple steps:
 
@@ -104,7 +112,6 @@ Please follow these simple steps:
 - **Commit messages**: Use conventional commits (e.g., `feat:`, `fix:`, `docs:`).
 - **Pull request**: Open a PR against `main` with a clear description and link any related issues.
 - **Discussion**: For questions or larger changes, open an issue first to discuss the design.
-
 
 ## 📄 License
 
