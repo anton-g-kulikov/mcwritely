@@ -61,18 +61,25 @@ class AccessibilityManager {
         var focusedElement: AnyObject?
         let result = AXUIElementCopyAttributeValue(appElement, kAXFocusedUIElementAttribute as CFString, &focusedElement)
         
-        guard result == .success, let element = focusedElement as? AXUIElement else {
+        guard result == .success, let element = focusedElement else {
             print("Writely: Could not find focused element in \(finalApp.localizedName ?? "app")")
             return nil
         }
         
+        let elementRef = element as CFTypeRef
+        guard CFGetTypeID(elementRef) == AXUIElementGetTypeID() else {
+            print("Writely: Focused element is not an AXUIElement in \(finalApp.localizedName ?? "app")")
+            return nil
+        }
+        let axElement = unsafeBitCast(element, to: AXUIElement.self)
+        
         // Try AX first
         var selectedText: AnyObject?
-        let textResult = AXUIElementCopyAttributeValue(element, kAXSelectedTextAttribute as CFString, &selectedText)
+        let textResult = AXUIElementCopyAttributeValue(axElement, kAXSelectedTextAttribute as CFString, &selectedText)
         
         if textResult == .success, let text = selectedText as? String, !text.isEmpty {
             return CaptureTarget(
-                element: element,
+                element: axElement,
                 appName: finalApp.localizedName ?? "Active App",
                 appPID: finalApp.processIdentifier,
                 bundleIdentifier: finalApp.bundleIdentifier,
@@ -103,7 +110,7 @@ class AccessibilityManager {
         
         if let text = pasteboard.string(forType: .string), !text.isEmpty {
             return CaptureTarget(
-                element: element,
+                element: axElement,
                 appName: finalApp.localizedName ?? "Active App",
                 appPID: finalApp.processIdentifier,
                 bundleIdentifier: finalApp.bundleIdentifier,

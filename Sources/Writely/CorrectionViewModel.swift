@@ -34,7 +34,12 @@ class CorrectionViewModel: ObservableObject {
         }
         
         // 2. Use pre-captured target or try to capture now
-        let targetToUse: CaptureTarget? = preCapturedTarget ?? await AccessibilityManager.shared.captureSelectedText()
+        let targetToUse: CaptureTarget?
+        if let preCapturedTarget {
+            targetToUse = preCapturedTarget
+        } else {
+            targetToUse = await AccessibilityManager.shared.captureSelectedText()
+        }
         
         guard let target = targetToUse else {
             if correctedText.isEmpty {
