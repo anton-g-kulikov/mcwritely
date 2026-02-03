@@ -5,3 +5,4 @@ Generated/
 *.app/
 *.icns
 AppIcon.iconset/
+*.dmg
