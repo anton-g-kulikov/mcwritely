@@ -9,10 +9,15 @@ let package = Package(
     products: [
         .executable(name: "Writely", targets: ["Writely"])
     ],
+    dependencies: [],
     targets: [
         .executableTarget(
             name: "Writely",
             path: "Sources/Writely"
+        ),
+        .testTarget(
+            name: "WritelyTests",
+            dependencies: ["Writely"]
         )
     ]
 )
