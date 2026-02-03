@@ -38,7 +38,7 @@ class AccessibilityManager {
         // 1. First, look for the frontmost app that ISN'T Writely
         // When clicking a menu bar icon, the previous app often still has focus
         for app in apps {
-            if app.bundleIdentifier != "com.antonkulikov.writely" && app.isActive {
+            if app.bundleIdentifier != "com.antonkulikov.mcwritely" && app.isActive {
                 targetApp = app
                 break
             }
@@ -47,30 +47,30 @@ class AccessibilityManager {
         // 2. Fallback: Look for any recently active app (ignoring background/hidden processes)
         if targetApp == nil {
             // Sort by launch date or just pick the first visible non-Writely app
-            targetApp = apps.filter { $0.bundleIdentifier != "com.antonkulikov.writely" && !$0.isHidden && $0.activationPolicy == .regular }.first
+            targetApp = apps.filter { $0.bundleIdentifier != "com.antonkulikov.mcwritely" && !$0.isHidden && $0.activationPolicy == .regular }.first
         }
         
         guard let finalApp = targetApp else {
-            print("Writely: Error - Could not identify a target application to read from.")
+            print("McWritely: Error - Could not identify a target application to read from.")
             return nil
         }
         
         _ = await ensureAppIsFrontmost(finalApp)
         
-        print("Writely: Attempting capture from \(finalApp.localizedName ?? "Unknown App") (\(finalApp.bundleIdentifier ?? "no-id"))")
+        print("McWritely: Attempting capture from \(finalApp.localizedName ?? "Unknown App") (\(finalApp.bundleIdentifier ?? "no-id"))")
         
         let appElement = AXUIElementCreateApplication(finalApp.processIdentifier)
         var focusedElement: AnyObject?
         let result = AXUIElementCopyAttributeValue(appElement, kAXFocusedUIElementAttribute as CFString, &focusedElement)
         
         guard result == .success, let element = focusedElement else {
-            print("Writely: Could not find focused element in \(finalApp.localizedName ?? "app")")
+            print("McWritely: Could not find focused element in \(finalApp.localizedName ?? "app")")
             return nil
         }
         
         let elementRef = element as CFTypeRef
         guard CFGetTypeID(elementRef) == AXUIElementGetTypeID() else {
-            print("Writely: Focused element is not an AXUIElement in \(finalApp.localizedName ?? "app")")
+            print("McWritely: Focused element is not an AXUIElement in \(finalApp.localizedName ?? "app")")
             return nil
         }
         let axElement = unsafeBitCast(element, to: AXUIElement.self)
@@ -91,7 +91,7 @@ class AccessibilityManager {
         
         // Fallback: Simulate Cmd+C
         // We MUST ensure the target app stays frontmost for Cmd+C to work
-        print("Writely: AX failed, trying Clipboard fallback for \(finalApp.localizedName ?? "app")...")
+        print("McWritely: AX failed, trying Clipboard fallback for \(finalApp.localizedName ?? "app")...")
         
         let pasteboard = NSPasteboard.general
         let originalItems = snapshotPasteboardItems(pasteboard)
@@ -146,9 +146,9 @@ class AccessibilityManager {
         }
         
         // Fallback: Paste
-        print("Writely: AX Write failed, trying Paste fallback...")
+        print("McWritely: AX Write failed, trying Paste fallback...")
         guard await ensureTargetAppFrontmost(target) else {
-            print("Writely: Target app not frontmost, paste cancelled.")
+            print("McWritely: Target app not frontmost, paste cancelled.")
             return false
         }
         

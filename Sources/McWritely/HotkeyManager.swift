@@ -10,7 +10,7 @@ class HotkeyManager {
     
     func startMonitoring(onTrigger: @escaping (CaptureTarget?) -> Void) {
         if !AccessibilityManager.shared.checkInputMonitoringPermissions() {
-            print("Writely: Input Monitoring permission not granted. Hotkey may not work.")
+            print("McWritely: Input Monitoring permission not granted. Hotkey may not work.")
         }
         
         // Shift + Option + Cmd + G
@@ -30,7 +30,7 @@ class HotkeyManager {
         }
         
         if monitor == nil {
-            print("Writely: Failed to register global hotkey monitor.")
+            print("McWritely: Failed to register global hotkey monitor.")
         }
     }
     
