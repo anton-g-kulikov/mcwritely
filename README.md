@@ -33,6 +33,27 @@ This creates `Writely.app` in the root directory.
 ```
 This generates `Writely.dmg` for easy distribution and installation.
 
+## 💡 Troubleshooting
+
+### "The application can't be opened"
+If you see this error when trying to open Writely on another computer, it is usually because macOS has flagged the app as quarantined since it was downloaded from the internet and is unsigned.
+
+**Solution 1 (Recommended):**
+1.  **Right-click** (or Control-click) the `Writely` app icon.
+2.  Select **Open** from the menu.
+3.  In the dialog that appears, click **Open** again. This bypasses Gatekeeper for this specific app.
+
+**Solution 2 (Terminal):**
+Run the following command in Terminal to clear the quarantine flag:
+```bash
+xattr -cr /Applications/Writely.app
+```
+
+### Universal Binary
+The `package.sh` script now builds a **Universal Binary**. This means the app works natively on both:
+- **Apple Silicon** (M1, M2, M3, M4)
+- **Intel** processors
+
 ## ⚙️ Customization
 
 If you want to customize Writely's behavior, you can modify the following in `Sources/Writely/OpenAIService.swift`:
