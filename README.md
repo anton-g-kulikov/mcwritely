@@ -33,6 +33,25 @@ This creates `Writely.app` in the root directory.
 ```
 This generates `Writely.dmg` for easy distribution and installation.
 
+## ⚙️ Customization
+
+If you want to customize Writely's behavior, you can modify the following in `Sources/Writely/OpenAIService.swift`:
+
+### Change the Model
+Update the `model` property (default: `gpt-4o-mini`):
+```swift
+private let model: String = "gpt-4o"
+```
+
+### Custom Instructions
+You can modify the `systemPrompt` variable to change how the AI refines your text (e.g., to focus on a specific tone or language):
+```swift
+let systemPrompt = """
+You are a creative writing assistant. 
+Focus on making the text more descriptive and evocative.
+"""
+```
+
 ## ⚙️ Technical Details
 
 - **ML Backend**: Powered by OpenAI (`gpt-4o-mini`).
@@ -44,5 +63,3 @@ This generates `Writely.dmg` for easy distribution and installation.
 Using `gpt-4o-mini`, the cost is extremely low:
 - 100,000 words ≈ $0.50
 - 1,000,000 words ≈ $5.00
-Your budget of $144/year is more than enough for heavy professional use.
-
