@@ -1,15 +1,15 @@
 import SwiftUI
 
 @main
-struct WritelyApp: App {
+struct McWritelyApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Environment(\.openWindow) private var openWindow
     
     var body: some Scene {
         // 1. Utility Menu Bar Icon
-        MenuBarExtra("Writely", systemImage: "pencil.and.outline") {
+        MenuBarExtra("McWritely", systemImage: "pencil.and.outline") {
             VStack(spacing: 0) {
-                Button("Open Writely") {
+                Button("Open McWritely") {
                     PanelManager.shared.show()
                     NotificationCenter.default.post(name: NSNotification.Name("TriggerCorrection"), object: nil)
                 }
@@ -40,7 +40,7 @@ struct WritelyApp: App {
         .menuBarExtraStyle(.window)
         
         // 2. Settings Window
-        Window("Writely Settings", id: "settings") {
+        Window("McWritely Settings", id: "settings") {
             SettingsView()
         }
         .windowResizability(.contentSize)
@@ -74,6 +74,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
         
-        print("Writely: App fully launched and monitoring.")
+        print("McWritely: App fully launched and monitoring.")
     }
 }

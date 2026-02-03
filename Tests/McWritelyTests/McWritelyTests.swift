@@ -1,9 +1,9 @@
 import XCTest
-@testable import Writely
+@testable import McWritely
 
-final class WritelyTests: XCTestCase {
+final class McWritelyTests: XCTestCase {
     func testKeychainStoreRoundTrip() throws {
-        let service = "com.antonkulikov.writely.tests"
+        let service = "com.antonkulikov.mcwritely.tests"
         let account = "test-\(UUID().uuidString)"
         let value = "test-key-\(UUID().uuidString)"
         
