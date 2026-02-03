@@ -34,6 +34,7 @@
 - [x] **CONFIG-TASK-001: Develop build and DMG packaging scripts** - ✅ **COMPLETED** - Automation for building and distribution
 - [x] **CONFIG-TASK-002: Rename project from Writely to McWritely** - ✅ **COMPLETED** - Updated all project assets, documentation, and source code.
 - [x] **CONFIG-TASK-003: Implement GitHub Actions for build verification** - ✅ **COMPLETED** - Add CI workflow for automated builds
+- [x] **CONFIG-TASK-004: Make Keychain Service identifier generic** - ✅ **COMPLETED** - Refactor `Settings.swift` to avoid hardcoded domain
 
 ### DOC
 - [x] **DOC-TASK-001: Document setup, usage, and customization in README** - ✅ **COMPLETED** - Comprehensive user and developer documentation

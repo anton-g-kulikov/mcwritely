@@ -41,6 +41,12 @@
 - **Description**: Verify that the system prompt and user content are correctly formatted before being sent to the API.
 - **Expected**: The resulting payload contains both the correct system instructions and the input text.
 
+### CORE-TEST-007: Keychain Service Identification
+- **Status**: ✅ COMPLETED
+- **Description**: Verify that the keychain service identifier is correctly derived from the bundle identifier.
+- **Expected**: The system should use the bundle ID if available, or a sensible default.
+- **Test File**: `Tests/McWritelyTests/McWritelyTests.swift:testKeychainServiceIdentifier`
+
 ## Test Coverage Goals
 
 - **Unit Tests**: Coverage for all core logic including selection handlers and API services.
