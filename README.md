@@ -95,6 +95,17 @@ Using `gpt-4o-mini`, the cost is extremely low:
 - 100,000 words ≈ $0.50
 - 1,000,000 words ≈ $5.00
 
+## 🤝 Contributing
+Please follow these simple steps:
+
+- **Fork & branch**: Fork the repo and create a branch named `feat/` or `fix/` with a short description.
+- **Build & test**: Run `./build.sh` to build and `./test.sh` to run tests locally.
+- **Style**: Follow existing Swift style and keep changes focused and small.
+- **Commit messages**: Use conventional commits (e.g., `feat:`, `fix:`, `docs:`).
+- **Pull request**: Open a PR against `main` with a clear description and link any related issues.
+- **Discussion**: For questions or larger changes, open an issue first to discuss the design.
+
+
 ## 📄 License
 
 This project is licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/).
