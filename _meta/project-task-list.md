@@ -2,13 +2,17 @@
 
 ## Current Tasks
 
+*(None)*
+
+## Completed Tasks
+
 - [x] **CORE-TASK-019: Remove force unwraps in AccessibilityManager** - ✅ **COMPLETED** - Replace force unwraps with safe optional binding to prevent crashes
 - [x] **API-TASK-020: Refactor OpenAIService to use Codable** - ✅ **COMPLETED** - Replace JSONSerialization with native Swift Codable structs
 - [x] **API-TASK-021: Implement idiomatic OpenAIError enum** - ✅ **COMPLETED** - Replace generic NSError with strongly typed OpenAIError
 - [x] **DOC-TASK-023: Add Shields.io badges (Swift, macOS, License) to README** - ✅ **COMPLETED** - Add "flare" to the top of README
 - [x] **DOC-TASK-024: Extract CONTRIBUTING.md and initialize CHANGELOG.md** - ✅ **COMPLETED** - Standardize project documentation
-- [ ] **RELEASE-TASK-025: Tag v1.2 and establish release process** - 🟡 **IN PROGRESS** - Create git tag and define release workflow
-- [ ] **CONFIG-TASK-026: Implement GitHub Actions for build verification** - 🟡 **IN PROGRESS** - Add CI workflow for automated builds
+- [x] **RELEASE-TASK-025: Tag v1.2 and establish release process** - ✅ **COMPLETED** - Create git tag and define release workflow
+- [x] **CONFIG-TASK-026: Implement GitHub Actions for build verification** - ✅ **COMPLETED** - Add CI workflow for automated builds
 - [x] **RELEASE-TASK-022: Bump version to 1.2 and commit changes** - ✅ **COMPLETED** - Bump version in Info.plist and create granular commits
 - [x] **DOC-TASK-018: Update Documentation with Security Findings** - ✅ **COMPLETED** - Add security notes to README based on review
 - [x] **CORE-TASK-017: Conduct Codebase Review (Security & Best Practices)** - ✅ **COMPLETED** - Reviewing codebase for security and style compliance
@@ -17,9 +21,6 @@
 - [x] **DOC-TASK-016: Add app icon to README.md** - ✅ **COMPLETED** - Included the new mustache pencil icon in the project documentation.
 - [x] **UI-TASK-015: Generate and implement new "McWritely" app icon** - ✅ **COMPLETED** - Created a pencil with a mustache icon and updated the app bundle.
 - [x] **CONFIG-TASK-013: Rename project from Writely to McWritely** - ✅ **COMPLETED** - Updated all project assets, documentation, and source code.
-
-## Completed Tasks
-
 - [x] **CORE-TASK-001: Initial project architecture and structure** - ✅ **COMPLETED** - Initial setup of the McWritely Swift project
 - [x] **CORE-TASK-012: Implement unit tests and test runner script** - ✅ **COMPLETED** - Added XCTest targets and helper scripts for verification
 - [x] **CORE-TASK-002: Implement accessibility-based selection capture and replacement** - ✅ **COMPLETED** - Core logic for interacting with other applications
