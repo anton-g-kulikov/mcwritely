@@ -47,6 +47,11 @@
 - **Expected**: The system should use the bundle ID if available, or a sensible default.
 - **Test File**: `Tests/McWritelyTests/McWritelyTests.swift:testKeychainServiceIdentifier`
 
+### UI-TEST-008: Version Info Display
+- **Status**: ✅ COMPLETED
+- **Description**: Verify that the current application version is displayed at the bottom of the Settings screen.
+- **Expected**: The text "Version 1.3" (or current bundle version) is visible and styled as small secondary text.
+
 ## Test Coverage Goals
 
 - **Unit Tests**: Coverage for all core logic including selection handlers and API services.

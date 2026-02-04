@@ -23,6 +23,7 @@
 - [x] **UI-TASK-001: Implement Settings UI for API keys and permissions** - ✅ **COMPLETED** - User-facing configuration interface
 - [x] **UI-TASK-002: Refine UI aesthetics (window shadows, alignment)** - ✅ **COMPLETED** - Polishing the application interface
 - [x] **UI-TASK-003: Generate and implement new "McWritely" app icon** - ✅ **COMPLETED** - Created a pencil with a mustache icon and updated the app bundle.
+- [x] **UI-TASK-004: Add version info to Settings screen** - ✅ **COMPLETED** - Display current app version at the bottom of Settings view.
 
 ### AUTH
 - [x] **AUTH-TASK-001: Implement secure API key storage using macOS Keychain** - ✅ **COMPLETED** - Secure storage for user credentials
