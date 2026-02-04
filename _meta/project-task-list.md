@@ -13,6 +13,7 @@
 - [x] **CORE-TASK-004: Implement unit tests and test runner script** - ✅ **COMPLETED** - Added XCTest targets and helper scripts for verification
 - [x] **CORE-TASK-005: Conduct Codebase Review (Security & Best Practices)** - ✅ **COMPLETED** - Reviewing codebase for security and style compliance
 - [x] **CORE-TASK-006: Remove force unwraps in AccessibilityManager** - ✅ **COMPLETED** - Replace force unwraps with safe optional binding to prevent crashes
+- [x] **CORE-TASK-007: Fix Slack Apply text replacement and clipboard persistence** - ✅ **COMPLETED** - Improve reliability of text replacement and fix clipboard retention bug.
 
 ### API
 - [x] **API-TASK-001: Integrate OpenAI GPT-4o-mini for writing assistance** - ✅ **COMPLETED** - Backend service for text refinement

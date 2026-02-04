@@ -138,15 +138,26 @@ class AccessibilityManager {
     
     @MainActor
     func replaceText(in target: CaptureTarget, with correctedText: String) async -> Bool {
+        // ALWAYS handle clipboard if settings request it, or if we anticipate AX failure
+        let shouldKeepInClipboard = Settings.shared.keepNewTextInClipboard
+        
         // Try AX first
         let writeResult = AXUIElementSetAttributeValue(target.element, kAXSelectedTextAttribute as CFString, correctedText as CFString)
+        let axSuccess = (writeResult == .success)
         
-        if writeResult == .success {
+        if axSuccess {
+            print("McWritely: AX Write reported success.")
+            // Even if AX succeeds, we might need to update clipboard
+            if shouldKeepInClipboard {
+                let pasteboard = NSPasteboard.general
+                pasteboard.clearContents()
+                pasteboard.setString(correctedText, forType: .string)
+            }
             return true
         }
         
         // Fallback: Paste
-        print("McWritely: AX Write failed, trying Paste fallback...")
+        print("McWritely: AX Write failed or unreliable, trying Paste fallback...")
         guard await ensureTargetAppFrontmost(target) else {
             print("McWritely: Target app not frontmost, paste cancelled.")
             return false
@@ -159,16 +170,18 @@ class AccessibilityManager {
         pasteboard.setString(correctedText, forType: .string)
         
         // Give macOS a moment to restore focus to target app
-        try? await Task.sleep(nanoseconds: 150_000_000)
+        try? await Task.sleep(nanoseconds: 200_000_000)
         simulatePaste()
         
         // Retry paste once after re-activating, for apps that ignore the first Cmd+V
-        try? await Task.sleep(nanoseconds: 150_000_000)
+        try? await Task.sleep(nanoseconds: 200_000_000)
         if await ensureTargetAppFrontmost(target) {
             simulatePaste()
         }
 
-        if !Settings.shared.keepNewTextInClipboard {
+        if !shouldKeepInClipboard {
+            // Give time for the app to process the paste before restoring clipboard
+            try? await Task.sleep(nanoseconds: 300_000_000)
             restorePasteboardItems(pasteboard, items: originalItems)
         }
         return true

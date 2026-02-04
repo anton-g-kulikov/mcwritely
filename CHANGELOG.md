@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved project portability by removing hardcoded personal domains.
 
 ### Fixed
+- Slack text replacement reliability by adding focus delays and more robust paste fallback.
+- Clipboard persistence bug where new text was not saved when Accessibility API reported success.
 - Outdated `OpenAIService` unit tests to align with current implementation.
 - Added tests for Keychain service identification.
 
