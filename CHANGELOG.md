@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added version info to the bottom of the Settings screen.
 
+### Removed
+- Failing GitHub workflow (`build.yml`) due to Keychain access restrictions in CI.
+- Stray `package-lock.json` file.
+
 ### Changed
 - Refactored Keychain service identification to use `Bundle.main.bundleIdentifier` dynamically.
 - Improved project portability by removing hardcoded personal domains.

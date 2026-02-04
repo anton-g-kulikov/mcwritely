@@ -30,6 +30,7 @@
 
 ### UTIL
 - [x] **UTIL-TASK-001: Add clipboard retention toggle for user control** - ✅ **COMPLETED** - New feature for clipboard management
+- [x] **UTIL-TASK-002: Remove failing GitHub workflow and clean up stray files** - ✅ **COMPLETED** - Remove `.github/workflows/build.yml` and `package-lock.json`.
 
 ### CONFIG
 - [x] **CONFIG-TASK-001: Develop build and DMG packaging scripts** - ✅ **COMPLETED** - Automation for building and distribution
