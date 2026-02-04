@@ -50,6 +50,7 @@
 ### RELEASE
 - [x] **RELEASE-TASK-001: Bump version to 1.2 and commit changes** - ✅ **COMPLETED** - Bump version in Info.plist and create granular commits
 - [x] **RELEASE-TASK-002: Tag v1.2 and establish release process** - ✅ **COMPLETED** - Create git tag and define release workflow
+- [x] **RELEASE-TASK-003: Bump version to 1.3.1 and rebuild DMG** - ✅ **COMPLETED** - Update Info.plist and CHANGELOG.md, then package the application.
 
 ## Task Status Legend
 

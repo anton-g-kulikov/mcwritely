@@ -50,7 +50,7 @@
 ### UI-TEST-008: Version Info Display
 - **Status**: ✅ COMPLETED
 - **Description**: Verify that the current application version is displayed at the bottom of the Settings screen.
-- **Expected**: The text "Version 1.3" (or current bundle version) is visible and styled as small secondary text.
+- **Expected**: The text "Version 1.3.1" (or current bundle version) is visible and styled as small secondary text.
 
 ## Test Coverage Goals
 
