@@ -54,9 +54,7 @@ struct CorrectionView: View {
                                 )
                             
                             Button(action: {
-                                PanelManager.shared.hide()
                                 Task {
-                                    try? await Task.sleep(nanoseconds: 200_000_000)
                                     await viewModel.applyCorrection()
                                 }
                             }) {

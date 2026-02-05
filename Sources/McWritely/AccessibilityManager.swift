@@ -137,6 +137,12 @@ class AccessibilityManager {
         let shouldKeepInClipboard = Settings.shared.keepNewTextInClipboard
         
         // Try AX first
+        // ENSURE frontmost before AX write too, not just paste
+        guard await ensureTargetAppFrontmost(target) else {
+            print("McWritely: Target app not frontmost, replacement cancelled.")
+            return false
+        }
+        
         let writeResult = AXUIElementSetAttributeValue(target.element, kAXSelectedTextAttribute as CFString, correctedText as CFString)
         let axSuccess = (writeResult == .success)
         
@@ -176,7 +182,7 @@ class AccessibilityManager {
 
         if !shouldKeepInClipboard {
             // Give time for the app to process the paste before restoring clipboard
-            try? await Task.sleep(nanoseconds: 300_000_000)
+            try? await Task.sleep(nanoseconds: 500_000_000)
             restorePasteboardItems(pasteboard, items: originalItems)
         }
         return true

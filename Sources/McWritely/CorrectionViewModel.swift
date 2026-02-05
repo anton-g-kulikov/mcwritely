@@ -76,7 +76,8 @@ class CorrectionViewModel: ObservableObject {
         if !success {
             self.errorMessage = "Failed to replace text. Ensure the app is still focused."
         } else {
-            // Success! Reset or close popover.
+            // Success! Reset and hide.
+            PanelManager.shared.hide()
             self.originalText = ""
             self.correctedText = ""
             self.currentTarget = nil

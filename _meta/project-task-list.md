@@ -2,7 +2,9 @@
 
 ## Current Tasks
 
-- [ ] **RELEASE-TASK-007: Bump version to 1.4.1 and rebuild DMG** - 🟡 **IN PROGRESS** - Maintenance release for focus fix.
+- [x] **RELEASE-TASK-009: Bump version to 1.4.3 and rebuild DMG** - ✅ **COMPLETED**
+- [x] **RELEASE-TASK-008: Bump version to 1.4.2 (Robust Replacement Fix)** - ✅ **COMPLETED**
+- [x] **RELEASE-TASK-007: Bump version to 1.4.1 and rebuild DMG** - ✅ **COMPLETED** - Maintenance release for focus fix.
 - [x] **RELEASE-TASK-006: Bump version to 1.4.0 and rebuild DMG** - ✅ **COMPLETED** - Major cleanup of permissions.
 
 ## Completed Tasks
