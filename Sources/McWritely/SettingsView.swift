@@ -43,15 +43,7 @@ struct SettingsView: View {
                             onRequest: { _ = AccessibilityManager.shared.checkPermissions(prompt: true) }
                         )
                         
-                        PermissionRow(
-                            title: "Input Monitoring",
-                            isGranted: AccessibilityManager.shared.checkInputMonitoringPermissions(),
-                            onRequest: { _ = AccessibilityManager.shared.checkInputMonitoringPermissions(prompt: true) }
-                        )
-                        
-                        Text("Input Monitoring is required for the global hotkey to work.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+
                     }
                 }
             }

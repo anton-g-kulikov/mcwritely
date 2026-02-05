@@ -1,42 +1,98 @@
-import Foundation
-import AppKit
+import Cocoa
+import Carbon
 
 class HotkeyManager {
     static let shared = HotkeyManager()
     
-    private var monitor: Any?
+    // Core callback for the hotkey action
+    private var onTrigger: ((CaptureTarget?) -> Void)?
+    
+    // Store refs for cleanup
+    private var hotKeyRef: EventHotKeyRef?
+    private var eventHandler: EventHandlerRef?
     
     private init() {}
     
     func startMonitoring(onTrigger: @escaping (CaptureTarget?) -> Void) {
-        if !AccessibilityManager.shared.checkInputMonitoringPermissions() {
-            print("McWritely: Input Monitoring permission not granted. Hotkey may not work.")
+        self.onTrigger = onTrigger
+        
+        // Carbon HotKey Registration
+        
+        // 1. Signature
+        // We pick an arbitrary 4-char code for our signature.
+        // 'McWr' in hex: 0x4D635772
+        let hotKeyID = EventHotKeyID(signature: 0x4D635772, id: 1)
+        
+        // 2. Modifiers: Cmd + Option + Shift
+        // In Carbon: cmdKey (256), optionKey (2048), shiftKey (512)
+        // Note: We use the Carbon constants
+        let modifiers = UInt32(cmdKey | optionKey | shiftKey)
+        
+        // 3. KeyCode for 'G' is 5
+        let keyCode = UInt32(5)
+        
+        // 4. Register
+        var ref: EventHotKeyRef?
+        let status = RegisterEventHotKey(
+            keyCode,
+            modifiers,
+            hotKeyID,
+            GetApplicationEventTarget(),
+            0,
+            &ref
+        )
+        
+        guard status == noErr else {
+            print("McWritely: Failed to register Carbon hotkey. Status: \(status)")
+            return
         }
+        self.hotKeyRef = ref
         
-        // Shift + Option + Cmd + G
-        // Modifiers: command (1 << 20), option (1 << 19), shift (1 << 17)
-        // Key code for 'G' is 5
+        // 5. Install Handler
+        var eventType = EventTypeSpec(
+            eventClass: OSType(kEventClassKeyboard),
+            eventKind: UInt32(kEventHotKeyPressed)
+        )
         
-        monitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
-            let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
-            let expectedModifiers: NSEvent.ModifierFlags = [.command, .option, .shift]
-            
-            if modifiers == expectedModifiers && event.keyCode == 5 {
-                Task { @MainActor in
-                    let target = await AccessibilityManager.shared.captureSelectedText()
-                    onTrigger(target)
-                }
-            }
+        let selfPtr = Unmanaged.passUnretained(self).toOpaque()
+        
+        let handlerStatus = InstallEventHandler(
+            GetApplicationEventTarget(),
+            { (handler, event, userData) -> OSStatus in
+                // Recover 'self' context
+                guard let userData = userData else { return noErr }
+                let manager = Unmanaged<HotkeyManager>.fromOpaque(userData).takeUnretainedValue()
+                
+                manager.handleHotKeyPress()
+                return noErr
+            },
+            1,
+            &eventType,
+            selfPtr,
+            &eventHandler
+        )
+        
+        if handlerStatus == noErr {
+            print("McWritely: Carbon Hotkey registered (Cmd+Opt+Shift+G). Input Monitoring not required.")
+        } else {
+            print("McWritely: Failed to install Carbon event handler: \(handlerStatus)")
         }
-        
-        if monitor == nil {
-            print("McWritely: Failed to register global hotkey monitor.")
+    }
+    
+    private func handleHotKeyPress() {
+        print("McWritely: Hotkey triggered!")
+        Task { @MainActor in
+            let target = await AccessibilityManager.shared.captureSelectedText()
+            self.onTrigger?(target)
         }
     }
     
     deinit {
-        if let monitor = monitor {
-            NSEvent.removeMonitor(monitor)
+        if let hotKeyRef = hotKeyRef {
+            UnregisterEventHotKey(hotKeyRef)
+        }
+        if let eventHandler = eventHandler {
+            RemoveEventHandler(eventHandler)
         }
     }
 }

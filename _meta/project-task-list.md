@@ -2,7 +2,7 @@
 
 ## Current Tasks
 
-- [x] **RELEASE-TASK-005: Bump version to 1.3.3 and rebuild DMG** - ✅ **COMPLETED** - Update Info.plist and CHANGELOG.md, then package the application.
+- [x] **RELEASE-TASK-006: Bump version to 1.4.0 and rebuild DMG** - ✅ **COMPLETED** - Major cleanup of permissions.
 
 ## Completed Tasks
 

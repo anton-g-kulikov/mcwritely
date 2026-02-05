@@ -23,15 +23,7 @@ class AccessibilityManager {
         return AXIsProcessTrusted()
     }
     
-    func checkInputMonitoringPermissions(prompt: Bool = false) -> Bool {
-        let hasAccess = CGPreflightListenEventAccess()
-        if prompt && !hasAccess {
-            // CGRequestListenEventAccess() doesn't show UI like the Accessibility prompt does.
-            // We must explicitly open System Preferences to the Input Monitoring pane.
-            openInputMonitoringSettings()
-        }
-        return hasAccess
-    }
+
     
     @MainActor
     func captureSelectedText() async -> CaptureTarget? {
@@ -208,11 +200,7 @@ class AccessibilityManager {
         }
     }
     
-    func openInputMonitoringSettings() {
-        if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent") {
-            NSWorkspace.shared.open(url)
-        }
-    }
+
     
     private func getActiveAppName() -> String {
         if let frontmostApp = NSWorkspace.shared.frontmostApplication {
