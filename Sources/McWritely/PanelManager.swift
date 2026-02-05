@@ -28,5 +28,6 @@ class PanelManager {
     
     func hide() {
         panel?.orderOut(nil)
+        NSApp.hide(nil)
     }
 }
