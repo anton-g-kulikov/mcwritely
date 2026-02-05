@@ -2,7 +2,7 @@
 
 ## Current Tasks
 
-*(None)*
+- [x] **RELEASE-TASK-005: Bump version to 1.3.3 and rebuild DMG** - ✅ **COMPLETED** - Update Info.plist and CHANGELOG.md, then package the application.
 
 ## Completed Tasks
 
@@ -14,6 +14,7 @@
 - [x] **CORE-TASK-005: Conduct Codebase Review (Security & Best Practices)** - ✅ **COMPLETED** - Reviewing codebase for security and style compliance
 - [x] **CORE-TASK-006: Remove force unwraps in AccessibilityManager** - ✅ **COMPLETED** - Replace force unwraps with safe optional binding to prevent crashes
 - [x] **CORE-TASK-007: Fix Slack Apply text replacement and clipboard persistence** - ✅ **COMPLETED** - Improve reliability of text replacement and fix clipboard retention bug.
+- [x] **UI-TASK-005: Fix Input Monitoring Request Access button** - ✅ **COMPLETED** - Button now opens System Preferences to Input Monitoring pane
 
 ### API
 - [x] **API-TASK-001: Integrate OpenAI GPT-4o-mini for writing assistance** - ✅ **COMPLETED** - Backend service for text refinement

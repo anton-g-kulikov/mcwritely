@@ -24,10 +24,13 @@ class AccessibilityManager {
     }
     
     func checkInputMonitoringPermissions(prompt: Bool = false) -> Bool {
-        if prompt {
-            return CGRequestListenEventAccess()
+        let hasAccess = CGPreflightListenEventAccess()
+        if prompt && !hasAccess {
+            // CGRequestListenEventAccess() doesn't show UI like the Accessibility prompt does.
+            // We must explicitly open System Preferences to the Input Monitoring pane.
+            openInputMonitoringSettings()
         }
-        return CGPreflightListenEventAccess()
+        return hasAccess
     }
     
     @MainActor
