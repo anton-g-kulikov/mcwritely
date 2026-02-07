@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Built updated DMG.
 
+## [2.0.0] - 2026-02-07
+### Added
+- Improved selection capture for Electron/other apps via frontmost app tracking and richer pasteboard extraction.
+- Added verified/unverified Apply results; the panel only auto-hides on verified success.
+- Added an AX range/value replacement strategy before falling back to paste.
+
+### Changed
+- Corrected text is always kept on the clipboard after Apply.
+
 ## [1.4.3] - 2026-02-05
 ### Changed
 - Rebuilt installation package with latest robust text replacement logic.

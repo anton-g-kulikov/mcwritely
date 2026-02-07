@@ -3,7 +3,7 @@
 ![Swift 5.9](https://img.shields.io/badge/Swift-5.9-orange.svg)
 ![macOS 14.0+](https://img.shields.io/badge/platform-macOS%2014.0%2B-blue.svg)
 ![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)
-![Version](https://img.shields.io/badge/version-1.2-green.svg)
+![Version](https://img.shields.io/badge/version-2.0.0-green.svg)
 
 McWritely is a lightweight macOS utility that provides AI-powered writing assistance in any application. It captures your selected text, refines it using OpenAI, and lets you replace the original text with a much better version instantly.
 
@@ -107,6 +107,10 @@ McWritely is designed with privacy and security in mind:
 - **Secure Storage**: Your OpenAI API Key is stored securely in the **macOS Keychain**, not in plain text files.
 - **Direct Communication**: Text is sent directly from your Mac to OpenAI's API via HTTPS. No intermediate servers or third-party analytics are used.
 - **Privacy First**: McWritely only processes text you explicitly select and submit. It does not monitor your keystrokes or background activity.
+
+## 📋 Clipboard Behavior
+
+McWritely always leaves the corrected text on your clipboard after **Apply**. If replacement fails in a particular app, you can paste manually.
 
 ## 🤝 Contributing
 
