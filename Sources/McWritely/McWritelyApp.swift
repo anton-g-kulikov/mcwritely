@@ -10,8 +10,8 @@ struct McWritelyApp: App {
         MenuBarExtra("McWritely", systemImage: "pencil.and.outline") {
             VStack(spacing: 0) {
                 Button("Open McWritely") {
-                    PanelManager.shared.show()
                     NotificationCenter.default.post(name: .resetCorrectionUI, object: nil)
+                    PanelManager.shared.show()
                 }
                 .padding()
                 

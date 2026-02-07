@@ -63,6 +63,12 @@ class CorrectionViewModel: ObservableObject {
         self.correctedText = ""
         self.isProcessing = true
         self.errorMessage = nil
+        defer {
+            // Only clear the spinner for the active run.
+            if self.processNonce == nonce {
+                self.isProcessing = false
+            }
+        }
         
         do {
             let result = try await service.correctText(target.selectedText)
@@ -72,8 +78,6 @@ class CorrectionViewModel: ObservableObject {
             guard processNonce == nonce else { return }
             self.errorMessage = error.localizedDescription
         }
-        
-        self.isProcessing = false
     }
 
     @MainActor
