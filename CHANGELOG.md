@@ -28,6 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Selection capture in Electron editors (Codex, VS Code) now falls back to clipboard capture even when the app does not expose a focused accessibility element.
 - Clipboard fallback is more robust: uses menu-copy + multiple key injection routes and no longer relies on pasteboard `changeCount` to accept a captured string.
 
+## [2.0.4] - 2026-02-07
+### Fixed
+- Reduced false “could not verify paste” messages after successful Apply (notably in Notion) by normalizing verification text and re-capturing selection to confirm paste.
+
 ## [2.0.2] - 2026-02-07
 ### Fixed
 - Improved selection capture in Electron-based apps (Codex, VS Code) by:
