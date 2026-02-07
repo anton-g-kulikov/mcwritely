@@ -20,7 +20,7 @@
   - [x] Improve Cmd+C injection by posting a full key chord directly to the target PID (fallback to session tap)
   - [x] Add unit tests for selection text resolution precedence (pure logic) and update test docs
   - [x] Harden clipboard fallback for Electron: delay after hotkey, try multiple injection routes (menu copy, session-tap, pid), relax pasteboard gating, and run even when focused AX element is unavailable (Est: 1-2h)
-  - [ ] Ensure hotkey triggers a capture attempt even when pre-capture fails (avoid empty no-op state); show spinner + actionable error (Est: 30-60m)
+  - [x] Ensure hotkey triggers a capture attempt even when capture fails (avoid empty no-op state); show spinner + actionable error (Est: 30-60m)
   - [ ] Manual verification in Codex app + VS Code (Electron) (Est: 15-30m)
 
 ### UI
