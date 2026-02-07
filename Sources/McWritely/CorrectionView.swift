@@ -120,13 +120,26 @@ struct CorrectionView: View {
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .padding(20) // Outer padding for shadow clearance
         .onReceive(NotificationCenter.default.publisher(for: .triggerCorrection)) { notification in
+            if let context = notification.object as? TriggerCorrectionContext {
+                if let target = context.capturedTarget {
+                    startChecking(target: target)
+                } else {
+                    viewModel.showCaptureFailure(preferredApp: context.preferredApp)
+                }
+                return
+            }
+
             if let target = notification.object as? CaptureTarget {
                 startChecking(target: target)
-            } else if let app = notification.object as? NSRunningApplication {
-                startChecking(preferredApp: app)
-            } else {
-                // No-op: don’t auto-capture on open; require an explicit trigger.
+                return
             }
+
+            if let app = notification.object as? NSRunningApplication {
+                startChecking(preferredApp: app)
+                return
+            }
+
+            // No-op: don’t auto-capture on open; require an explicit trigger.
         }
         .onReceive(NotificationCenter.default.publisher(for: .resetCorrectionUI)) { _ in
             viewModel.reset()

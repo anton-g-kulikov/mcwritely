@@ -64,11 +64,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // Start monitoring early
         HotkeyManager.shared.startMonitoring { preferredApp in
-            // Notify UI to capture from the originating app.
-            NotificationCenter.default.post(name: .triggerCorrection, object: preferredApp)
-            
-            // Show panel immediately and bring to front
-            DispatchQueue.main.async {
+            // Capture before showing the panel so Electron apps don't clear selection on focus shift.
+            Task { @MainActor in
+                let captured = await AccessibilityManager.shared.captureSelectedText(preferredApp: preferredApp)
+                let context = TriggerCorrectionContext(preferredApp: preferredApp, capturedTarget: captured)
+                NotificationCenter.default.post(name: .triggerCorrection, object: context)
                 PanelManager.shared.show()
             }
         }

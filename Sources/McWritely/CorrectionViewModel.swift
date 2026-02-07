@@ -105,6 +105,17 @@ class CorrectionViewModel: ObservableObject {
         self.errorMessage = result.detail ?? "Could not verify replacement. The corrected text is on your clipboard."
     }
 
+    @MainActor
+    func showCaptureFailure(preferredApp: NSRunningApplication?) {
+        let appName = preferredApp?.localizedName
+        reset()
+        if let appName, !appName.isEmpty {
+            errorMessage = "Could not capture selected text from \(appName). Try selecting text again. If it still fails, press Cmd+C in \(appName) first, then trigger McWritely."
+        } else {
+            errorMessage = "No text selected. Please select some text in another app."
+        }
+    }
+
     func reset() {
         processNonce = UUID()
         originalText = ""
