@@ -147,6 +147,17 @@
   - Confirm McWritely closes (verified) instead of showing an unverified warning.
 - **Expected**: Verified outcome for successful paste in Notion.
 
+### UI-TEST-026: Accessibility Permission UI Refresh (Manual)
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify that Settings reflects Accessibility permission changes.
+- **Steps**:
+  - Ensure McWritely is enabled in System Settings -> Privacy & Security -> Accessibility.
+  - Open McWritely Settings.
+  - Confirm the Permissions row shows a green checkmark (not "Request Access").
+  - If it initially shows "Request Access", toggle permission off/on in System Settings and return to McWritely; confirm the UI updates on app-activate.
+- **Expected**: The row updates without requiring a full app restart (best effort), or provides a clear indication if macOS requires restart.
+
 ### CORE-TEST-006: Prompt Construction Logic
 
 - **Status**: 📋 NOT STARTED
