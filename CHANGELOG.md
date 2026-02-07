@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.12] - 2026-02-07
+### Fixed
+- Improved Apply in Electron/webviews by preferring menu-based Paste (Edit -> Paste) over synthetic key events, reasserting the corrected text on the clipboard after clipboard-based checks, and treating Notion paste as verified when a selection was present at paste time.
+
 ## [2.0.11] - 2026-02-07
 ### Fixed
 - Prevented duplicate pastes in Electron editors by ensuring Cmd+V is delivered via a single route and by avoiding automatic pasting when a selection cannot be confirmed (to prevent appending/duplication).
