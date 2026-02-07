@@ -227,4 +227,36 @@ final class McWritelyTests: XCTestCase {
         )
         XCTAssertTrue(ok)
     }
+
+    func testMenuCopyCandidateSelectorPrefersCmdC() throws {
+        let candidates: [(MenuCopyCandidate, Int)] = [
+            (MenuCopyCandidate(title: "Copy Style", cmdChar: "c", cmdModifiers: 256 | 2048, enabled: true), 0), // Cmd+Opt+C
+            (MenuCopyCandidate(title: "Copy", cmdChar: "c", cmdModifiers: 256, enabled: true), 1), // Cmd+C
+            (MenuCopyCandidate(title: "Copy Link", cmdChar: "c", cmdModifiers: 256 | 512, enabled: true), 2) // Cmd+Shift+C
+        ]
+
+        let picked = MenuCopyCandidateSelector.chooseBest(from: candidates.map { (candidate: $0.0, index: $0.1) })
+        XCTAssertEqual(picked?.1, 1)
+    }
+
+    func testMenuCopyCandidateSelectorIgnoresDisabled() throws {
+        let candidates: [(MenuCopyCandidate, Int)] = [
+            (MenuCopyCandidate(title: "Copy", cmdChar: "c", cmdModifiers: 256, enabled: false), 0),
+            (MenuCopyCandidate(title: "Copy Style", cmdChar: "c", cmdModifiers: 256 | 2048, enabled: true), 1)
+        ]
+
+        let picked = MenuCopyCandidateSelector.chooseBest(from: candidates.map { (candidate: $0.0, index: $0.1) })
+        XCTAssertEqual(picked?.1, 1)
+    }
+
+    func testMenuCopyCandidateSelectorUsesTitleAsTieBreaker() throws {
+        let candidates: [(MenuCopyCandidate, Int)] = [
+            (MenuCopyCandidate(title: "Copy Something", cmdChar: "c", cmdModifiers: 256, enabled: true), 0),
+            (MenuCopyCandidate(title: "Copy", cmdChar: "c", cmdModifiers: 256, enabled: true), 1),
+            (MenuCopyCandidate(title: nil, cmdChar: "c", cmdModifiers: 256, enabled: true), 2)
+        ]
+
+        let picked = MenuCopyCandidateSelector.chooseBest(from: candidates.map { (candidate: $0.0, index: $0.1) })
+        XCTAssertEqual(picked?.1, 1)
+    }
 }
