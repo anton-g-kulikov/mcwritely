@@ -41,10 +41,16 @@
 - [x] **RELEASE-TASK-010: Release 2.0.0 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
 - [x] **RELEASE-TASK-011: Release 2.0.1 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
 - [x] **RELEASE-TASK-012: Release 2.0.2 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
-- [ ] **RELEASE-TASK-013: Release 2.0.3 (version bump + changelog + rebuilt app/DMG)** - 🟡 **IN PROGRESS** (Est: 1-2h)
-  - [ ] Complete `CORE-TASK-013` and update release notes if needed
+- [x] **RELEASE-TASK-013: Release 2.0.3 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
+- [x] **RELEASE-TASK-014: Release 2.0.4 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
+- [x] **RELEASE-TASK-015: Release 2.0.5 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
+- [x] **RELEASE-TASK-016: Release 2.0.6 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
+- [x] **RELEASE-TASK-017: Release 2.0.7 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
+- [ ] **RELEASE-TASK-018: Release 2.0.8 (version bump + changelog + rebuilt app/DMG)** - 🟡 **IN PROGRESS** (Est: 30-60m)
+  - [ ] Ensure `CORE-TASK-013` manual verification in Codex + VS Code is done
+  - [ ] Update `CHANGELOG.md` (reverse chronological) and version badge in `README.md`
+  - [ ] Bump `Info.plist` version to 2.0.8
   - [ ] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
-  - [ ] Smoke-test selection capture in Codex + VS Code + Notion
 
 ### CONFIG
 
