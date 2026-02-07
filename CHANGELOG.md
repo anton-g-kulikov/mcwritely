@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Settings now refreshes Accessibility permission state when the window opens and when the app becomes active, so the UI reflects granted access.
 
+## [2.0.6] - 2026-02-07
+### Fixed
+- Hotkey-triggered capture attempts now show a spinner and a clear error message when selection capture fails (avoids a silent empty panel in Codex/VS Code).
+
 ## [2.0.4] - 2026-02-07
 ### Fixed
 - Reduced false “could not verify paste” messages after successful Apply (notably in Notion) by normalizing verification text and re-capturing selection to confirm paste.
