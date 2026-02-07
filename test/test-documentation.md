@@ -126,6 +126,26 @@
   - In VS Code: select a short snippet in the editor, trigger `Cmd+Opt+Shift+G`, ensure McWritely shows the selection.
 - **Expected**: McWritely’s panel populates with the selected text (no “No text selected” error).
 
+### CORE-TEST-024: Text Normalization For Verification
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify that text normalization makes verification resilient to platform/editor formatting differences.
+- **Cases**:
+  - NBSP (`\\u{00A0}`) vs regular spaces
+  - CRLF vs LF
+  - Multiple whitespace runs vs single spaces
+- **Expected**: Normalized strings compare equal when they are visually equivalent.
+
+### CORE-TEST-025: Notion Paste Verification Fallback (Manual)
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify that after successful paste into Notion, McWritely does not show a red “could not verify” warning and the panel closes automatically.
+- **Steps**:
+  - In Notion: select a short snippet, run McWritely, press Apply.
+  - Confirm the document updates.
+  - Confirm McWritely closes (verified) instead of showing an unverified warning.
+- **Expected**: Verified outcome for successful paste in Notion.
+
 ### CORE-TEST-006: Prompt Construction Logic
 
 - **Status**: 📋 NOT STARTED

@@ -9,6 +9,10 @@
 - [x] **CORE-TASK-010: Verified replacement results + truthful UI behavior** - ✅ **COMPLETED** - “Apply” now returns verified/unverified/failed results; panel only auto-hides on verified success
 - [x] **CORE-TASK-011: Add AX range/value replacement strategy before paste fallback** - ✅ **COMPLETED** - Uses `kAXSelectedTextRange` + `kAXValue` where available before falling back
 - [x] **CORE-TASK-012: Capture selection reliably in Codex app + VS Code** - ✅ **COMPLETED** - Added AX value+range capture, deterministic clipboard marker copy fallback, and AX menu-copy fallback
+- [ ] **CORE-TASK-014: Reduce false "unverified paste" in Notion by improving verification** - 🟡 **IN PROGRESS** (Est: 1-2h)
+  - [ ] Add text normalization for verification comparisons (NBSP, CRLF, whitespace runs)
+  - [ ] After paste fallback, attempt verification by re-capturing selection from the target app (uses existing capture pipeline)
+  - [ ] Add/Update tests + test documentation; verify manual behavior in Notion
 - [ ] **CORE-TASK-013: Fix remaining selection capture failures in Electron editors (Codex, VS Code)** - 🟡 **IN PROGRESS** (Est: 2-4h)
   - [x] Add AX “walk up the focused element’s parent chain” to find a better text element
   - [x] Add `kAXStringForRangeParameterizedAttribute`/`kAXAttributedStringForRangeParameterizedAttribute` capture path when `selectedTextRange` is available
