@@ -5,7 +5,8 @@ class CorrectionPanel: NSPanel {
     init(contentView: NSView) {
         super.init(
             contentRect: NSRect(x: 0, y: 0, width: 420, height: 400),
-            styleMask: [.borderless, .fullSizeContentView],
+            // Non-activating so Electron apps keep the selection even while the panel is visible/clicked.
+            styleMask: [.borderless, .fullSizeContentView, .nonactivatingPanel],
             backing: .buffered,
             defer: false
         )
@@ -24,10 +25,11 @@ class CorrectionPanel: NSPanel {
     }
     
     override var canBecomeKey: Bool {
-        return true
+        // Don't become key; keep the target app active so selection isn't lost before Apply.
+        return false
     }
     
     override var canBecomeMain: Bool {
-        return true
+        return false
     }
 }

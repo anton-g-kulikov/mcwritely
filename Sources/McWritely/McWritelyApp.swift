@@ -11,7 +11,7 @@ struct McWritelyApp: App {
             VStack(spacing: 0) {
                 Button("Open McWritely") {
                     NotificationCenter.default.post(name: .resetCorrectionUI, object: nil)
-                    PanelManager.shared.show()
+                    PanelManager.shared.show(activating: true)
                 }
                 .padding()
                 
@@ -69,7 +69,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 let captured = await AccessibilityManager.shared.captureSelectedText(preferredApp: preferredApp)
                 let context = TriggerCorrectionContext(preferredApp: preferredApp, capturedTarget: captured)
                 NotificationCenter.default.post(name: .triggerCorrection, object: context)
-                PanelManager.shared.show()
+                PanelManager.shared.show(activating: false)
             }
         }
         

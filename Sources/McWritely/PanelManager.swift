@@ -18,12 +18,18 @@ class PanelManager {
         self.panel = panel
     }
     
-    func show() {
+    func show(activating: Bool = true) {
         guard let panel = panel else { return }
         
-        NSApp.activate(ignoringOtherApps: true)
         panel.center()
-        panel.makeKeyAndOrderFront(nil)
+        if activating {
+            NSApp.activate(ignoringOtherApps: true)
+            panel.makeKeyAndOrderFront(nil)
+        } else {
+            // Show without activating the app. This is important for Electron editors where activation
+            // clears the selection, causing Apply (Cmd+V) to append instead of replace.
+            panel.orderFrontRegardless()
+        }
     }
     
     func hide() {
