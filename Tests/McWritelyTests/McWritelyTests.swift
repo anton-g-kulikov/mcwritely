@@ -126,4 +126,15 @@ final class McWritelyTests: XCTestCase {
         XCTAssertFalse(ReplacementVerifier.isVerified(selectedText: nil, value: nil, correctedText: "Hello"))
         XCTAssertFalse(ReplacementVerifier.isVerified(selectedText: "Something else", value: "Other", correctedText: "Hello"))
     }
+
+    func testRangeReplacementHappyPath() throws {
+        let s = "Hello world"
+        let replaced = StringRangeReplacer.replacing(in: s, range: NSRange(location: 6, length: 5), with: "there")
+        XCTAssertEqual(replaced, "Hello there")
+    }
+
+    func testRangeReplacementRejectsInvalidRanges() throws {
+        XCTAssertNil(StringRangeReplacer.replacing(in: "Hi", range: NSRange(location: 0, length: 9), with: "x"))
+        XCTAssertNil(StringRangeReplacer.replacing(in: "Hi", range: NSRange(location: -1, length: 1), with: "x"))
+    }
 }

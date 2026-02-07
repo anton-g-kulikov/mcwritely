@@ -8,6 +8,7 @@ struct CaptureTarget {
     let appPID: pid_t
     let bundleIdentifier: String?
     let selectedText: String
+    let selectedTextRange: NSRange?
 }
 
 class AccessibilityManager {
@@ -85,12 +86,14 @@ class AccessibilityManager {
         let textResult = AXUIElementCopyAttributeValue(axElement, kAXSelectedTextAttribute as CFString, &selectedText)
         
         if textResult == .success, let text = selectedText as? String, !text.isEmpty {
+            let range = readAXRange(axElement, attribute: kAXSelectedTextRangeAttribute as CFString)
             return CaptureTarget(
                 element: axElement,
                 appName: finalApp.localizedName ?? "Active App",
                 appPID: finalApp.processIdentifier,
                 bundleIdentifier: finalApp.bundleIdentifier,
-                selectedText: text
+                selectedText: text,
+                selectedTextRange: range
             )
         }
         
@@ -119,7 +122,8 @@ class AccessibilityManager {
                     appName: finalApp.localizedName ?? "Active App",
                     appPID: finalApp.processIdentifier,
                     bundleIdentifier: finalApp.bundleIdentifier,
-                    selectedText: text
+                    selectedText: text,
+                    selectedTextRange: readAXRange(axElement, attribute: kAXSelectedTextRangeAttribute as CFString)
                 )
             }
         }
@@ -153,10 +157,28 @@ class AccessibilityManager {
             return ReplacementResult(method: nil, state: .failed, detail: "Target app is not focused. Click back into the target app and try Apply again.")
         }
         
+        // Strategy A: Replace within kAXValue using the selected text range.
+        if let range = readAXRange(target.element, attribute: kAXSelectedTextRangeAttribute as CFString) ?? target.selectedTextRange,
+           let value = readAXString(target.element, attribute: kAXValueAttribute as CFString),
+           let newValue = StringRangeReplacer.replacing(in: value, range: range, with: correctedText) {
+            let valueWrite = AXUIElementSetAttributeValue(target.element, kAXValueAttribute as CFString, newValue as CFString)
+            if valueWrite == .success {
+                let selected = readAXString(target.element, attribute: kAXSelectedTextAttribute as CFString)
+                let updatedValue = readAXString(target.element, attribute: kAXValueAttribute as CFString)
+                if ReplacementVerifier.isVerified(selectedText: selected, value: updatedValue, correctedText: correctedText) {
+                    return ReplacementResult(method: .axValueRange, state: .verified, detail: nil)
+                }
+                return ReplacementResult(
+                    method: .axValueRange,
+                    state: .unverified,
+                    detail: "McWritely attempted to apply the text but could not verify it in this app. The corrected text is on your clipboard; you can paste it manually if needed."
+                )
+            }
+        }
+
+        // Strategy B: Try setting selected text directly (works in some apps).
         let writeResult = AXUIElementSetAttributeValue(target.element, kAXSelectedTextAttribute as CFString, correctedText as CFString)
-        let axSuccess = (writeResult == .success)
-        
-        if axSuccess {
+        if writeResult == .success {
             print("McWritely: AX Write reported success.")
             let selected = readAXString(target.element, attribute: kAXSelectedTextAttribute as CFString)
             let value = readAXString(target.element, attribute: kAXValueAttribute as CFString)
@@ -219,6 +241,20 @@ class AccessibilityManager {
         let result = AXUIElementCopyAttributeValue(element, attribute, &value)
         guard result == .success else { return nil }
         return value as? String
+    }
+
+    private func readAXRange(_ element: AXUIElement, attribute: CFString) -> NSRange? {
+        var value: AnyObject?
+        let result = AXUIElementCopyAttributeValue(element, attribute, &value)
+        guard result == .success, let value else { return nil }
+        let ref = value as CFTypeRef
+        guard CFGetTypeID(ref) == AXValueGetTypeID() else { return nil }
+        let axValue = unsafeBitCast(value, to: AXValue.self)
+
+        var cfRange = CFRange()
+        guard AXValueGetValue(axValue, .cfRange, &cfRange) else { return nil }
+        if cfRange.location < 0 || cfRange.length < 0 { return nil }
+        return NSRange(location: cfRange.location, length: cfRange.length)
     }
     
     func openAccessibilitySettings() {

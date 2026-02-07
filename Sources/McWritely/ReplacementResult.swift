@@ -2,6 +2,7 @@ import Foundation
 
 struct ReplacementResult {
     enum Method {
+        case axValueRange
         case axSelectedText
         case paste
     }
@@ -18,4 +19,3 @@ struct ReplacementResult {
 
     var shouldClosePanel: Bool { state == .verified }
 }
-
