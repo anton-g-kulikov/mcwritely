@@ -15,6 +15,8 @@ class AccessibilityManager {
     static let shared = AccessibilityManager()
     
     private init() {}
+
+    private static let maxPasteFallbackReselectUTF16Count = 800
     
     func checkPermissions(prompt: Bool = false) -> Bool {
         if prompt {
@@ -226,6 +228,96 @@ class AccessibilityManager {
         usleep(5_000)
         post(up)
     }
+
+    private func simulateShiftSelectLeft(appPID: pid_t, times: Int) {
+        if times <= 0 { return }
+        let capped = min(times, AccessibilityManager.maxPasteFallbackReselectUTF16Count)
+        let source = CGEventSource(stateID: .hidSystemState) ?? CGEventSource(stateID: .combinedSessionState)
+        let leftArrow: CGKeyCode = 0x7B
+
+        for i in 0..<capped {
+            postModifiedKeyPress(source: source, virtualKey: leftArrow, flags: .maskShift) { ev in
+                ev.postToPid(appPID)
+            }
+            if i % 40 == 39 {
+                usleep(1_000)
+            }
+        }
+    }
+
+    private func simulateMoveCaretRight(appPID: pid_t) {
+        let source = CGEventSource(stateID: .hidSystemState) ?? CGEventSource(stateID: .combinedSessionState)
+        let rightArrow: CGKeyCode = 0x7C
+
+        postModifiedKeyPress(source: source, virtualKey: rightArrow, flags: []) { ev in
+            ev.postToPid(appPID)
+        }
+        postModifiedKeyPress(source: source, virtualKey: rightArrow, flags: []) { ev in
+            ev.post(tap: .cgAnnotatedSessionEventTap)
+        }
+    }
+
+    @MainActor
+    private func hasActiveSelectionByCopy(appPID: pid_t, correctedText: String) async -> Bool {
+        let pasteboard = NSPasteboard.general
+        let marker = "MCWR_SELECTION_CHECK_\(UUID().uuidString)"
+        pasteboard.clearContents()
+        pasteboard.setString(marker, forType: .string)
+
+        performMenuCopy(appPID: appPID)
+        simulateCopy(appPID: appPID)
+
+        // Poll briefly. If there's a selection, Cmd+C should overwrite our marker.
+        for attempt in 0..<10 {
+            try? await Task.sleep(nanoseconds: 60_000_000)
+            if let s = PasteboardTextExtractor.plainText(from: pasteboard), s != marker {
+                pasteboard.clearContents()
+                pasteboard.setString(correctedText, forType: .string)
+                _ = attempt
+                return true
+            }
+        }
+
+        // Restore corrected text.
+        pasteboard.clearContents()
+        pasteboard.setString(correctedText, forType: .string)
+        return false
+    }
+
+    @MainActor
+    private func verifyInsertedTextBySelectingAndCopying(appPID: pid_t, correctedText: String) async -> Bool {
+        let utf16Count = correctedText.utf16.count
+        if utf16Count <= 0 || utf16Count > AccessibilityManager.maxPasteFallbackReselectUTF16Count {
+            return false
+        }
+
+        // Select the just-inserted text (caret is expected to be at the end after paste), copy, compare.
+        simulateShiftSelectLeft(appPID: appPID, times: utf16Count)
+
+        let pasteboard = NSPasteboard.general
+        let marker = "MCWR_VERIFY_COPY_\(UUID().uuidString)"
+        pasteboard.clearContents()
+        pasteboard.setString(marker, forType: .string)
+
+        performMenuCopy(appPID: appPID)
+        simulateCopy(appPID: appPID)
+
+        for _ in 0..<12 {
+            try? await Task.sleep(nanoseconds: 60_000_000)
+            if let s = PasteboardTextExtractor.plainText(from: pasteboard), s != marker {
+                let ok = TextNormalizer.normalizeForVerification(s) == TextNormalizer.normalizeForVerification(correctedText)
+                pasteboard.clearContents()
+                pasteboard.setString(correctedText, forType: .string)
+                simulateMoveCaretRight(appPID: appPID)
+                return ok
+            }
+        }
+
+        pasteboard.clearContents()
+        pasteboard.setString(correctedText, forType: .string)
+        simulateMoveCaretRight(appPID: appPID)
+        return false
+    }
     
     private func captureFromElementOrAncestors(_ element: AXUIElement, maxDepth: Int = 12) -> (element: AXUIElement, text: String, range: NSRange?)? {
         var current: AXUIElement? = element
@@ -365,15 +457,28 @@ class AccessibilityManager {
             print("McWritely: Target app not frontmost, paste cancelled.")
             return ReplacementResult(method: .paste, state: .failed, detail: "Target app is not focused. Click back into the target app and try Apply again.")
         }
+
+        // In some Electron editors, the selection is cleared by the time Apply runs, so Cmd+V appends at the caret.
+        // Before pasting, try to detect whether a selection is active (marker+Cmd+C). If not, attempt to reselect
+        // the originally captured selection length by Shift+Left (best-effort).
+        var hadSelectionAtPasteTime = await hasActiveSelectionByCopy(appPID: target.appPID, correctedText: correctedText)
+        if !hadSelectionAtPasteTime {
+            let utf16Count = target.selectedText.utf16.count
+            if utf16Count > 0 && utf16Count <= AccessibilityManager.maxPasteFallbackReselectUTF16Count {
+                simulateShiftSelectLeft(appPID: target.appPID, times: utf16Count)
+                // Re-check once. If this still fails, we avoid "verifying" a paste that may have just appended.
+                hadSelectionAtPasteTime = await hasActiveSelectionByCopy(appPID: target.appPID, correctedText: correctedText)
+            }
+        }
         
         // Give macOS a moment to restore focus to target app
         try? await Task.sleep(nanoseconds: 200_000_000)
-        simulatePaste()
+        simulatePaste(appPID: target.appPID)
         
         // Retry paste once after re-activating, for apps that ignore the first Cmd+V
         try? await Task.sleep(nanoseconds: 200_000_000)
         if await ensureTargetAppFrontmost(target) {
-            simulatePaste()
+            simulatePaste(appPID: target.appPID)
         }
 
         // Best-effort verification.
@@ -386,6 +491,11 @@ class AccessibilityManager {
 
         // Some apps (Notion/webviews) replace the underlying accessibility element during paste,
         // making the original element unreadable even though paste succeeded.
+        // Try to verify via clipboard copy (best-effort) without relying on AX.
+        if hadSelectionAtPasteTime, await verifyInsertedTextBySelectingAndCopying(appPID: target.appPID, correctedText: correctedText) {
+            return ReplacementResult(method: .paste, state: .verified, detail: nil)
+        }
+
         // Try to re-capture the (still selected) text and verify against that.
         if let app = NSRunningApplication(processIdentifier: target.appPID) {
             if let recaptured = await captureSelectedText(preferredApp: app),
@@ -401,16 +511,20 @@ class AccessibilityManager {
         )
     }
     
-    private func simulatePaste() {
-        let source = CGEventSource(stateID: .combinedSessionState)
-        let cmdDown = CGEvent(keyboardEventSource: source, virtualKey: 0x09, keyDown: true) // 0x09 is 'V'
-        let cmdUp = CGEvent(keyboardEventSource: source, virtualKey: 0x09, keyDown: false)
-        
-        cmdDown?.flags = .maskCommand
-        cmdUp?.flags = .maskCommand
-        
-        cmdDown?.post(tap: .cgAnnotatedSessionEventTap)
-        cmdUp?.post(tap: .cgAnnotatedSessionEventTap)
+    private func simulatePaste(appPID: pid_t) {
+        let source = CGEventSource(stateID: .hidSystemState) ?? CGEventSource(stateID: .combinedSessionState)
+        let vKey: CGKeyCode = 0x09 // 'V'
+
+        postModifiedKeyPress(source: source, virtualKey: vKey, flags: .maskCommand) { ev in
+            ev.postToPid(appPID)
+        }
+
+        postModifiedKeyPress(source: source, virtualKey: vKey, flags: .maskCommand) { ev in
+            ev.post(tap: .cghidEventTap)
+        }
+        postModifiedKeyPress(source: source, virtualKey: vKey, flags: .maskCommand) { ev in
+            ev.post(tap: .cgAnnotatedSessionEventTap)
+        }
     }
 
     private func readAXString(_ element: AXUIElement, attribute: CFString) -> String? {
