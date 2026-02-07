@@ -43,19 +43,19 @@
 
 ### CORE-TEST-013: Replacement Verification (Selected Text Match)
 
-- **Status**: 📋 NOT STARTED
+- **Status**: ✅ COMPLETED
 - **Description**: Verify that replacement is considered verified when the target app's selected text matches the corrected text (trimmed).
 - **Expected**: Verified = true.
 
 ### CORE-TEST-014: Replacement Verification (Value Contains Corrected Text)
 
-- **Status**: 📋 NOT STARTED
+- **Status**: ✅ COMPLETED
 - **Description**: Verify that replacement can be treated as verified when the target app's value contains the corrected text (fallback verification).
 - **Expected**: Verified = true.
 
 ### CORE-TEST-015: Replacement Verification Negative Cases
 
-- **Status**: 📋 NOT STARTED
+- **Status**: ✅ COMPLETED
 - **Description**: Verify that replacement is not verified when neither selected text nor value indicate the corrected text was applied.
 - **Expected**: Verified = false.
 

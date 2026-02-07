@@ -72,16 +72,18 @@ class CorrectionViewModel: ObservableObject {
     @MainActor
     func applyCorrection() async {
         guard let target = currentTarget else { return }
-        let success = await AccessibilityManager.shared.replaceText(in: target, with: correctedText)
-        if !success {
-            self.errorMessage = "Failed to replace text. Ensure the app is still focused."
-        } else {
+        let result = await AccessibilityManager.shared.replaceText(in: target, with: correctedText)
+        if result.shouldClosePanel {
             // Success! Reset and hide.
             PanelManager.shared.hide()
             self.originalText = ""
             self.correctedText = ""
             self.currentTarget = nil
+            self.errorMessage = nil
+            return
         }
+
+        self.errorMessage = result.detail ?? "Could not verify replacement. The corrected text is on your clipboard."
     }
     
     private func updateService(for apiKey: String) {

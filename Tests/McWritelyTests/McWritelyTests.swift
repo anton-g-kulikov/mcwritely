@@ -103,4 +103,27 @@ final class McWritelyTests: XCTestCase {
         let extracted = PasteboardTextExtractor.plainText(fromReadObjects: objects)
         XCTAssertEqual(extracted, "Hello from coercion")
     }
+
+    func testReplacementVerificationSelectedTextMatch() throws {
+        let ok = ReplacementVerifier.isVerified(
+            selectedText: "  Hello  ",
+            value: nil,
+            correctedText: "Hello"
+        )
+        XCTAssertTrue(ok)
+    }
+
+    func testReplacementVerificationValueContainsCorrectedText() throws {
+        let ok = ReplacementVerifier.isVerified(
+            selectedText: nil,
+            value: "prefix Hello suffix",
+            correctedText: "Hello"
+        )
+        XCTAssertTrue(ok)
+    }
+
+    func testReplacementVerificationNegativeCases() throws {
+        XCTAssertFalse(ReplacementVerifier.isVerified(selectedText: nil, value: nil, correctedText: "Hello"))
+        XCTAssertFalse(ReplacementVerifier.isVerified(selectedText: "Something else", value: "Other", correctedText: "Hello"))
+    }
 }

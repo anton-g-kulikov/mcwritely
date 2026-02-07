@@ -140,7 +140,7 @@ class AccessibilityManager {
     }
     
     @MainActor
-    func replaceText(in target: CaptureTarget, with correctedText: String) async -> Bool {
+    func replaceText(in target: CaptureTarget, with correctedText: String) async -> ReplacementResult {
         // Always keep corrected text on clipboard so users can manually paste if replacement fails.
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
@@ -150,7 +150,7 @@ class AccessibilityManager {
         // ENSURE frontmost before AX write too, not just paste
         guard await ensureTargetAppFrontmost(target) else {
             print("McWritely: Target app not frontmost, replacement cancelled.")
-            return false
+            return ReplacementResult(method: nil, state: .failed, detail: "Target app is not focused. Click back into the target app and try Apply again.")
         }
         
         let writeResult = AXUIElementSetAttributeValue(target.element, kAXSelectedTextAttribute as CFString, correctedText as CFString)
@@ -158,14 +158,23 @@ class AccessibilityManager {
         
         if axSuccess {
             print("McWritely: AX Write reported success.")
-            return true
+            let selected = readAXString(target.element, attribute: kAXSelectedTextAttribute as CFString)
+            let value = readAXString(target.element, attribute: kAXValueAttribute as CFString)
+            if ReplacementVerifier.isVerified(selectedText: selected, value: value, correctedText: correctedText) {
+                return ReplacementResult(method: .axSelectedText, state: .verified, detail: nil)
+            }
+            return ReplacementResult(
+                method: .axSelectedText,
+                state: .unverified,
+                detail: "McWritely attempted to apply the text but could not verify it in this app. The corrected text is on your clipboard; you can paste it manually if needed."
+            )
         }
         
         // Fallback: Paste
         print("McWritely: AX Write failed or unreliable, trying Paste fallback...")
         guard await ensureTargetAppFrontmost(target) else {
             print("McWritely: Target app not frontmost, paste cancelled.")
-            return false
+            return ReplacementResult(method: .paste, state: .failed, detail: "Target app is not focused. Click back into the target app and try Apply again.")
         }
         
         // Give macOS a moment to restore focus to target app
@@ -178,7 +187,19 @@ class AccessibilityManager {
             simulatePaste()
         }
 
-        return true
+        // Best-effort verification.
+        try? await Task.sleep(nanoseconds: 250_000_000)
+        let selected = readAXString(target.element, attribute: kAXSelectedTextAttribute as CFString)
+        let value = readAXString(target.element, attribute: kAXValueAttribute as CFString)
+        if ReplacementVerifier.isVerified(selectedText: selected, value: value, correctedText: correctedText) {
+            return ReplacementResult(method: .paste, state: .verified, detail: nil)
+        }
+
+        return ReplacementResult(
+            method: .paste,
+            state: .unverified,
+            detail: "McWritely attempted to paste the corrected text but could not verify the result in this app. The corrected text is on your clipboard; paste it manually if needed."
+        )
     }
     
     private func simulatePaste() {
@@ -191,6 +212,13 @@ class AccessibilityManager {
         
         cmdDown?.post(tap: .cgAnnotatedSessionEventTap)
         cmdUp?.post(tap: .cgAnnotatedSessionEventTap)
+    }
+
+    private func readAXString(_ element: AXUIElement, attribute: CFString) -> String? {
+        var value: AnyObject?
+        let result = AXUIElementCopyAttributeValue(element, attribute, &value)
+        guard result == .success else { return nil }
+        return value as? String
     }
     
     func openAccessibilitySettings() {
