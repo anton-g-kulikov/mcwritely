@@ -26,6 +26,7 @@
   - [x] Improve AX menu-copy fallback to reliably trigger Copy (avoid pressing wrong 'c' menu item): score candidates by cmdChar+modifiers+enabled, with title as tie-breaker (Est: 30-60m)
   - [x] Improve synthetic Cmd+C for Electron: post only `c` key with `.maskCommand`, and try `.cghidEventTap` as an extra fallback tap (Est: 15-30m)
   - [x] Fix Electron Apply appending (instead of replacing selection): show panel without activating McWritely so the target app keeps selection (Est: 30-60m)
+  - [ ] Prevent paste-fallback append in Electron: before Cmd+V, detect whether a selection is active (marker+Cmd+C). If selection is absent, attempt a safe reselect or show a clearer “could not replace selection” warning (Est: 1-2h)
   - [ ] Manual verification in Codex app + VS Code (Electron) (Est: 15-30m)
 
 ### UI

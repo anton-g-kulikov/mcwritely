@@ -165,6 +165,16 @@
   - Repeat in VS Code (in an editor buffer).
 - **Expected**: Resulting text equals the corrected text (single copy), and the original text is not left behind.
 
+### CORE-TEST-033: Paste Fallback Verifies In Notion (Manual)
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify that when Apply succeeds in Notion, McWritely does not incorrectly show the red “could not verify” warning.
+- **Steps**:
+  - In Notion: select a short snippet, trigger `Cmd+Opt+Shift+G`, click Apply.
+  - Confirm the Notion document updates to the corrected text.
+  - Confirm McWritely closes automatically (verified) or at minimum does not show a red error for a successful replacement.
+- **Expected**: Successful Notion paste yields a verified outcome (or a non-red warning if verification is impossible).
+
 ### CORE-TEST-031: Menu Copy Candidate Scoring (Unit)
 
 - **Status**: ✅ COMPLETED
