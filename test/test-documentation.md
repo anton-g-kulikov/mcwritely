@@ -35,6 +35,12 @@
 - **Expected**: `Settings.shared.keepNewTextInClipboard` should initialize to `false`.
 - **Test File**: `Tests/McWritelyTests/McWritelyTests.swift:testKeepNewTextInClipboardDefaultIsFalse`
 
+### UTIL-TEST-012: Settings Migration Removes Legacy Clipboard Key
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify that legacy UserDefaults key `keep_new_text_in_clipboard` is removed during settings migration, since clipboard behavior is now always "keep corrected text after Apply".
+- **Expected**: After migration, `keep_new_text_in_clipboard` is absent from the specified UserDefaults store.
+
 ### CORE-TEST-005: Selection Capture Validation
 
 - **Status**: 📋 NOT STARTED
