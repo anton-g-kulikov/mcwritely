@@ -27,6 +27,7 @@
   - [x] Improve synthetic Cmd+C for Electron: post only `c` key with `.maskCommand`, and try `.cghidEventTap` as an extra fallback tap (Est: 15-30m)
   - [x] Fix Electron Apply appending (instead of replacing selection): show panel without activating McWritely so the target app keeps selection (Est: 30-60m)
   - [x] Prevent paste-fallback append in Electron: before Cmd+V, detect whether a selection is active (marker+Cmd+C). If selection is absent, attempt a safe reselect (Shift+Left by captured length) and verify inserted text via copy selection when possible (Est: 1-2h)
+  - [ ] Fix paste duplication in Electron: avoid multi-route/multi-attempt Cmd+V that can paste multiple times; paste should execute at most once per Apply (Est: 30-60m)
   - [ ] Manual verification in Codex app + VS Code (Electron) (Est: 15-30m)
 
 ### UI
@@ -57,6 +58,7 @@
   - [ ] Smoke-test in Codex + VS Code: Apply replaces (not append)
   - [ ] Smoke-test in Notion: successful Apply does not show red verification error
   - [ ] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
+  - [ ] Fix paste duplication regression (if present)
 
 ### CONFIG
 

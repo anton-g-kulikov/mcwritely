@@ -175,6 +175,16 @@
   - Confirm McWritely closes automatically (verified) or at minimum does not show a red error for a successful replacement.
 - **Expected**: Successful Notion paste yields a verified outcome (or a non-red warning if verification is impossible).
 
+### CORE-TEST-034: Paste Fallback Does Not Duplicate (Manual)
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify paste fallback executes at most once per Apply and does not duplicate the corrected text (especially in Electron editors).
+- **Steps**:
+  - In Codex/VS Code: select a short snippet, run McWritely, click Apply.
+  - Confirm the corrected text appears exactly once (not repeated).
+  - Repeat with a longer selection (2-3 sentences).
+- **Expected**: No repeated/duplicated insertions from a single Apply.
+
 ### CORE-TEST-031: Menu Copy Candidate Scoring (Unit)
 
 - **Status**: ✅ COMPLETED
