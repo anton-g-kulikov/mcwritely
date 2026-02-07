@@ -21,7 +21,7 @@
 
 ### CONFIG
 
-- [ ] **CONFIG-TASK-005: Restore Applications alias in DMG installer** - 🟡 **IN PROGRESS** - Ensure `McWritely.dmg` is built from a folder containing `McWritely.app` and an `/Applications` symlink (Est: 0.5-1h)
+- [x] **CONFIG-TASK-005: Restore Applications alias in DMG installer** - ✅ **COMPLETED** - Ensure `McWritely.dmg` is built from a folder containing `McWritely.app` and an `/Applications` symlink
 
 ## Completed Tasks
 
