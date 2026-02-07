@@ -80,34 +80,17 @@ class AccessibilityManager {
             return nil
         }
         let axElement = unsafeBitCast(element, to: AXUIElement.self)
-        
-        // Try AX first
-        var selectedText: AnyObject?
-        let textResult = AXUIElementCopyAttributeValue(axElement, kAXSelectedTextAttribute as CFString, &selectedText)
-        
-        if textResult == .success, let text = selectedText as? String, !text.isEmpty {
-            let range = readAXRange(axElement, attribute: kAXSelectedTextRangeAttribute as CFString)
-            return CaptureTarget(
-                element: axElement,
-                appName: finalApp.localizedName ?? "Active App",
-                appPID: finalApp.processIdentifier,
-                bundleIdentifier: finalApp.bundleIdentifier,
-                selectedText: text,
-                selectedTextRange: range
-            )
-        }
 
-        // Some apps don't expose kAXSelectedText but do expose kAXValue + selection range.
-        if let value = readAXString(axElement, attribute: kAXValueAttribute as CFString),
-           let range = readAXRange(axElement, attribute: kAXSelectedTextRangeAttribute as CFString),
-           let extracted = StringRangeExtractor.substring(in: value, range: range) {
+        // Try AX first: in Electron/webviews the focused element often does not expose selection attributes.
+        // Walk up the parent chain and attempt multiple AX strategies (selectedText, stringForRange, value+range).
+        if let found = captureFromElementOrAncestors(axElement) {
             return CaptureTarget(
-                element: axElement,
+                element: found.element,
                 appName: finalApp.localizedName ?? "Active App",
                 appPID: finalApp.processIdentifier,
                 bundleIdentifier: finalApp.bundleIdentifier,
-                selectedText: extracted,
-                selectedTextRange: range
+                selectedText: found.text,
+                selectedTextRange: found.range
             )
         }
         
@@ -123,7 +106,7 @@ class AccessibilityManager {
         pasteboard.setString(marker, forType: .string)
         let markerChangeCount = pasteboard.changeCount
 
-        simulateCopy()
+        simulateCopy(appPID: finalApp.processIdentifier)
 
         defer { restorePasteboardItems(pasteboard, items: originalItems) }
 
@@ -156,16 +139,28 @@ class AccessibilityManager {
         return nil
     }
     
-    private func simulateCopy() {
+    private func simulateCopy(appPID: pid_t) {
         let source = CGEventSource(stateID: .combinedSessionState)
-        let cmdDown = CGEvent(keyboardEventSource: source, virtualKey: 0x08, keyDown: true) // 0x08 is 'C'
-        let cmdUp = CGEvent(keyboardEventSource: source, virtualKey: 0x08, keyDown: false)
-        
-        cmdDown?.flags = .maskCommand
-        cmdUp?.flags = .maskCommand
-        
-        cmdDown?.post(tap: .cgAnnotatedSessionEventTap)
-        cmdUp?.post(tap: .cgAnnotatedSessionEventTap)
+        let cmdKey: CGKeyCode = 0x37 // left command
+        let cKey: CGKeyCode = 0x08 // 'C'
+
+        let cmdDown = CGEvent(keyboardEventSource: source, virtualKey: cmdKey, keyDown: true)
+        let cDown = CGEvent(keyboardEventSource: source, virtualKey: cKey, keyDown: true)
+        let cUp = CGEvent(keyboardEventSource: source, virtualKey: cKey, keyDown: false)
+        let cmdUp = CGEvent(keyboardEventSource: source, virtualKey: cmdKey, keyDown: false)
+
+        cDown?.flags = .maskCommand
+        cUp?.flags = .maskCommand
+
+        // Prefer posting directly to the target PID. Some Electron apps ignore session-tap events.
+        let post: (CGEvent) -> Void = { ev in
+            ev.postToPid(appPID)
+        }
+
+        if let e = cmdDown { post(e) }
+        if let e = cDown { post(e) }
+        if let e = cUp { post(e) }
+        if let e = cmdUp { post(e) }
     }
 
     private func performMenuCopy(appPID: pid_t) {
@@ -206,6 +201,89 @@ class AccessibilityManager {
         }
 
         return nil
+    }
+
+    private func captureFromElementOrAncestors(_ element: AXUIElement, maxDepth: Int = 12) -> (element: AXUIElement, text: String, range: NSRange?)? {
+        var current: AXUIElement? = element
+        var depth = 0
+
+        while let el = current, depth <= maxDepth {
+            if let resolved = resolveSelectedText(for: el) {
+                return (element: el, text: resolved.text, range: resolved.range)
+            }
+            current = readAXElement(el, attribute: kAXParentAttribute as CFString)
+            depth += 1
+        }
+
+        return nil
+    }
+
+    private func resolveSelectedText(for element: AXUIElement) -> (text: String, range: NSRange?)? {
+        let selectedText = readAXString(element, attribute: kAXSelectedTextAttribute as CFString)
+        let range = readAXRange(element, attribute: kAXSelectedTextRangeAttribute as CFString)
+
+        // Parameterized range-based extraction works in some apps even when kAXSelectedText is missing.
+        let stringForRange: String? = {
+            guard let range else { return nil }
+            return readAXStringForRange(element, range: range)
+        }()
+
+        let value = readAXString(element, attribute: kAXValueAttribute as CFString)
+
+        guard let resolved = SelectionTextResolver.resolve(
+            selectedText: selectedText,
+            stringForRange: stringForRange,
+            value: value,
+            selectedRange: range
+        ) else {
+            return nil
+        }
+
+        return (text: resolved, range: range)
+    }
+
+    private func readAXStringForRange(_ element: AXUIElement, range: NSRange) -> String? {
+        var cfRange = CFRange(location: range.location, length: range.length)
+        guard let rangeValue = AXValueCreate(.cfRange, &cfRange) else { return nil }
+
+        var out: AnyObject?
+        if AXUIElementCopyParameterizedAttributeValue(
+            element,
+            kAXStringForRangeParameterizedAttribute as CFString,
+            rangeValue,
+            &out
+        ) == .success {
+            if let s = out as? String {
+                let trimmed = s.trimmingCharacters(in: .whitespacesAndNewlines)
+                return trimmed.isEmpty ? nil : trimmed
+            }
+            if let a = out as? NSAttributedString {
+                let trimmed = a.string.trimmingCharacters(in: .whitespacesAndNewlines)
+                return trimmed.isEmpty ? nil : trimmed
+            }
+        }
+
+        out = nil
+        if AXUIElementCopyParameterizedAttributeValue(
+            element,
+            kAXAttributedStringForRangeParameterizedAttribute as CFString,
+            rangeValue,
+            &out
+        ) == .success, let a = out as? NSAttributedString {
+            let trimmed = a.string.trimmingCharacters(in: .whitespacesAndNewlines)
+            return trimmed.isEmpty ? nil : trimmed
+        }
+
+        return nil
+    }
+
+    private func readAXElement(_ element: AXUIElement, attribute: CFString) -> AXUIElement? {
+        var value: AnyObject?
+        let result = AXUIElementCopyAttributeValue(element, attribute, &value)
+        guard result == .success, let value else { return nil }
+        let ref = value as CFTypeRef
+        guard CFGetTypeID(ref) == AXUIElementGetTypeID() else { return nil }
+        return unsafeBitCast(value, to: AXUIElement.self)
     }
     
     @MainActor
