@@ -73,7 +73,7 @@
 
 ### UI-TEST-018: ViewModel Reset Clears UI State
 
-- **Status**: 📋 NOT STARTED
+- **Status**: ✅ COMPLETED
 - **Description**: Verify that resetting the correction view model clears user-visible state (texts, error, target, processing flag).
 - **Expected**: All fields are reset to defaults without crashing.
 

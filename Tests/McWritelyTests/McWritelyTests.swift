@@ -77,6 +77,23 @@ final class McWritelyTests: XCTestCase {
         defaults.removePersistentDomain(forName: suiteName)
     }
 
+    func testViewModelResetClearsState() throws {
+        let vm = CorrectionViewModel()
+        vm.originalText = "orig"
+        vm.correctedText = "corr"
+        vm.isProcessing = true
+        vm.errorMessage = "err"
+        vm.currentTarget = nil
+
+        vm.reset()
+
+        XCTAssertEqual(vm.originalText, "")
+        XCTAssertEqual(vm.correctedText, "")
+        XCTAssertFalse(vm.isProcessing)
+        XCTAssertNil(vm.errorMessage)
+        XCTAssertNil(vm.currentTarget)
+    }
+
     func testRTFConversionToPlainText() throws {
         let attributed = NSAttributedString(string: "Hello RTF")
         let rtfData = try attributed.data(

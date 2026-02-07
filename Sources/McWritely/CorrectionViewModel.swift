@@ -11,6 +11,7 @@ class CorrectionViewModel: ObservableObject {
     
     private var aiService: OpenAIService?
     private var cancellables = Set<AnyCancellable>()
+    private var processNonce = UUID()
     
     init() {
         updateService(for: Settings.shared.apiKey)
@@ -25,6 +26,8 @@ class CorrectionViewModel: ObservableObject {
     
     @MainActor
     func processSelection(preCapturedTarget: CaptureTarget? = nil, preferredApp: NSRunningApplication? = nil) async {
+        let nonce = UUID()
+        processNonce = nonce
         self.errorMessage = nil
         
         // 1. Check Permissions first
@@ -40,6 +43,8 @@ class CorrectionViewModel: ObservableObject {
         } else {
             targetToUse = await AccessibilityManager.shared.captureSelectedText(preferredApp: preferredApp)
         }
+
+        guard processNonce == nonce else { return }
         
         guard let target = targetToUse else {
             if correctedText.isEmpty {
@@ -61,17 +66,20 @@ class CorrectionViewModel: ObservableObject {
         
         do {
             let result = try await service.correctText(target.selectedText)
+            guard processNonce == nonce else { return }
             self.correctedText = result
         } catch {
+            guard processNonce == nonce else { return }
             self.errorMessage = error.localizedDescription
         }
         
         self.isProcessing = false
     }
-    
+
     @MainActor
     func applyCorrection() async {
         guard let target = currentTarget else { return }
+        self.errorMessage = nil
         let result = await AccessibilityManager.shared.replaceText(in: target, with: correctedText)
         if result.shouldClosePanel {
             // Success! Reset and hide.
@@ -84,6 +92,15 @@ class CorrectionViewModel: ObservableObject {
         }
 
         self.errorMessage = result.detail ?? "Could not verify replacement. The corrected text is on your clipboard."
+    }
+
+    func reset() {
+        processNonce = UUID()
+        originalText = ""
+        correctedText = ""
+        isProcessing = false
+        errorMessage = nil
+        currentTarget = nil
     }
     
     private func updateService(for apiKey: String) {

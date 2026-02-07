@@ -96,8 +96,7 @@ struct CorrectionView: View {
             
             VStack(spacing: 12) {
                 Button(action: {
-                    viewModel.originalText = ""
-                    viewModel.correctedText = ""
+                    viewModel.reset()
                     PanelManager.shared.hide()
                 }) {
                     HStack {
@@ -120,21 +119,17 @@ struct CorrectionView: View {
         }
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .padding(20) // Outer padding for shadow clearance
-        .onAppear {
-            if !viewModel.isProcessing && !viewModel.originalText.isEmpty {
-                // Already have text, maybe continue?
-            } else {
-                startChecking()
-            }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("TriggerCorrection"))) { notification in
+        .onReceive(NotificationCenter.default.publisher(for: .triggerCorrection)) { notification in
             if let target = notification.object as? CaptureTarget {
                 startChecking(target: target)
             } else if let app = notification.object as? NSRunningApplication {
                 startChecking(preferredApp: app)
             } else {
-                startChecking()
+                // No-op: don’t auto-capture on open; require an explicit trigger.
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .resetCorrectionUI)) { _ in
+            viewModel.reset()
         }
     }
     
