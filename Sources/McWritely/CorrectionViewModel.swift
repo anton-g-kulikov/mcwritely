@@ -29,11 +29,20 @@ class CorrectionViewModel: ObservableObject {
         let nonce = UUID()
         processNonce = nonce
         self.errorMessage = nil
+        self.isProcessing = false
         
         // 1. Check Permissions first
         if !AccessibilityManager.shared.checkPermissions() {
             self.errorMessage = "Accessibility Permission Required. Please click the icon -> Settings to enable it."
             return
+        }
+
+        // Show spinner during the capture attempt so failures aren't "silent".
+        self.isProcessing = true
+        defer {
+            if self.processNonce == nonce {
+                self.isProcessing = false
+            }
         }
         
         // 2. Use pre-captured target or try to capture now
@@ -47,8 +56,13 @@ class CorrectionViewModel: ObservableObject {
         guard processNonce == nonce else { return }
         
         guard let target = targetToUse else {
+            let appName = preferredApp?.localizedName
             if correctedText.isEmpty {
-                self.errorMessage = "No text selected. Please select some text in another app."
+                if let appName, !appName.isEmpty {
+                    self.errorMessage = "Could not capture selected text from \(appName). Try selecting text again. If it still fails, press Cmd+C in \(appName) first, then trigger McWritely."
+                } else {
+                    self.errorMessage = "No text selected. Please select some text in another app."
+                }
             }
             return
         }
@@ -61,14 +75,7 @@ class CorrectionViewModel: ObservableObject {
         self.currentTarget = target
         self.originalText = target.selectedText
         self.correctedText = ""
-        self.isProcessing = true
         self.errorMessage = nil
-        defer {
-            // Only clear the spinner for the active run.
-            if self.processNonce == nonce {
-                self.isProcessing = false
-            }
-        }
         
         do {
             let result = try await service.correctText(target.selectedText)

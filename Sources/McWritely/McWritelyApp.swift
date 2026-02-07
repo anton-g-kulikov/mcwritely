@@ -63,12 +63,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         PanelManager.shared.setup(viewModel: viewModel)
         
         // Start monitoring early
-        HotkeyManager.shared.startMonitoring { target in
-            // Capture target and notify UI
-            NotificationCenter.default.post(
-                name: .triggerCorrection,
-                object: target
-            )
+        HotkeyManager.shared.startMonitoring { preferredApp in
+            // Notify UI to capture from the originating app.
+            NotificationCenter.default.post(name: .triggerCorrection, object: preferredApp)
             
             // Show panel immediately and bring to front
             DispatchQueue.main.async {

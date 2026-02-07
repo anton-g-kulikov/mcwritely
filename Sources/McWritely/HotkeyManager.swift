@@ -5,7 +5,7 @@ class HotkeyManager {
     static let shared = HotkeyManager()
     
     // Core callback for the hotkey action
-    private var onTrigger: ((CaptureTarget?) -> Void)?
+    private var onTrigger: ((NSRunningApplication?) -> Void)?
     
     // Store refs for cleanup
     private var hotKeyRef: EventHotKeyRef?
@@ -13,7 +13,7 @@ class HotkeyManager {
     
     private init() {}
     
-    func startMonitoring(onTrigger: @escaping (CaptureTarget?) -> Void) {
+    func startMonitoring(onTrigger: @escaping (NSRunningApplication?) -> Void) {
         self.onTrigger = onTrigger
         
         // Carbon HotKey Registration
@@ -82,10 +82,8 @@ class HotkeyManager {
     private func handleHotKeyPress() {
         print("McWritely: Hotkey triggered!")
         let preferredApp = NSWorkspace.shared.frontmostApplication
-        Task { @MainActor in
-            let target = await AccessibilityManager.shared.captureSelectedText(preferredApp: preferredApp)
-            self.onTrigger?(target)
-        }
+        // Capture happens in the UI layer so failures can be shown as an error (not a silent empty panel).
+        self.onTrigger?(preferredApp)
     }
     
     deinit {
