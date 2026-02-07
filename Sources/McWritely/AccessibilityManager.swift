@@ -17,6 +17,7 @@ class AccessibilityManager {
     private init() {}
 
     private static let maxPasteFallbackReselectUTF16Count = 800
+    private static let clipboardMarkerPrefix = "MCWR_"
     
     func checkPermissions(prompt: Bool = false) -> Bool {
         if prompt {
@@ -173,6 +174,25 @@ class AccessibilityManager {
         _ = AXUIElementPerformAction(candidates[idx].element, kAXPressAction as CFString)
     }
 
+    private func performMenuPaste(appPID: pid_t) -> Bool {
+        let app = AXUIElementCreateApplication(appPID)
+        var menubarObj: AnyObject?
+        let res = AXUIElementCopyAttributeValue(app, kAXMenuBarAttribute as CFString, &menubarObj)
+        guard res == .success, let menubarObj else { return false }
+        let ref = menubarObj as CFTypeRef
+        guard CFGetTypeID(ref) == AXUIElementGetTypeID() else { return false }
+        let menubar = unsafeBitCast(menubarObj, to: AXUIElement.self)
+
+        var candidates: [AXMenuCopyCandidate] = []
+        collectMenuShortcutCandidates(root: menubar, cmdChar: "v", into: &candidates, limit: 5000)
+        if candidates.isEmpty { return false }
+
+        let indexed = candidates.enumerated().map { (candidate: $0.element.candidate, index: $0.offset) }
+        guard let (_, idx) = MenuPasteCandidateSelector.chooseBest(from: indexed) else { return false }
+        let ok = AXUIElementPerformAction(candidates[idx].element, kAXPressAction as CFString) == .success
+        return ok
+    }
+
     private struct AXMenuCopyCandidate {
         let element: AXUIElement
         let candidate: MenuCopyCandidate
@@ -203,6 +223,35 @@ class AccessibilityManager {
             }
 
             collectMenuCopyCandidates(root: el, into: &out, limit: limit)
+        }
+    }
+
+    private func collectMenuShortcutCandidates(root: AXUIElement, cmdChar: String, into out: inout [AXMenuCopyCandidate], limit: Int) {
+        if out.count >= limit { return }
+
+        var childrenObj: AnyObject?
+        let res = AXUIElementCopyAttributeValue(root, kAXChildrenAttribute as CFString, &childrenObj)
+        guard res == .success, let children = childrenObj as? [AnyObject] else { return }
+
+        for child in children {
+            if out.count >= limit { return }
+            let childRef = child as CFTypeRef
+            if CFGetTypeID(childRef) != AXUIElementGetTypeID() { continue }
+            let el = unsafeBitCast(child, to: AXUIElement.self)
+
+            let cmd = readAXString(el, attribute: kAXMenuItemCmdCharAttribute as CFString)
+            let cmdModifiers = readAXInt(el, attribute: kAXMenuItemCmdModifiersAttribute as CFString)
+            let title = readAXString(el, attribute: kAXTitleAttribute as CFString)
+            let enabled = readAXBool(el, attribute: kAXEnabledAttribute as CFString)
+
+            if let cmd, cmd.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == cmdChar.lowercased() {
+                out.append(AXMenuCopyCandidate(
+                    element: el,
+                    candidate: MenuCopyCandidate(title: title, cmdChar: cmd, cmdModifiers: cmdModifiers, enabled: enabled)
+                ))
+            }
+
+            collectMenuShortcutCandidates(root: el, cmdChar: cmdChar, into: &out, limit: limit)
         }
     }
 
@@ -258,7 +307,7 @@ class AccessibilityManager {
     }
 
     @MainActor
-    private func hasActiveSelectionByCopy(appPID: pid_t, correctedText: String) async -> Bool {
+    private func hasActiveSelectionByCopy(appPID: pid_t, correctedText: String, originalSelectedText: String) async -> Bool {
         let pasteboard = NSPasteboard.general
         let marker = "MCWR_SELECTION_CHECK_\(UUID().uuidString)"
         pasteboard.clearContents()
@@ -268,19 +317,16 @@ class AccessibilityManager {
         simulateCopy(appPID: appPID)
 
         // Poll briefly. If there's a selection, Cmd+C should overwrite our marker.
-        for attempt in 0..<10 {
+        for _ in 0..<10 {
             try? await Task.sleep(nanoseconds: 60_000_000)
             if let s = PasteboardTextExtractor.plainText(from: pasteboard), s != marker {
-                pasteboard.clearContents()
-                pasteboard.setString(correctedText, forType: .string)
-                _ = attempt
+                ensureCorrectedTextStaysOnClipboard(correctedText: correctedText, originalSelectedText: originalSelectedText)
                 return true
             }
         }
 
-        // Restore corrected text.
-        pasteboard.clearContents()
-        pasteboard.setString(correctedText, forType: .string)
+        // Restore corrected text (delayed reassert to win races with Electron clipboard writes).
+        ensureCorrectedTextStaysOnClipboard(correctedText: correctedText, originalSelectedText: originalSelectedText)
         return false
     }
 
@@ -317,6 +363,31 @@ class AccessibilityManager {
         pasteboard.setString(correctedText, forType: .string)
         simulateMoveCaretRight(appPID: appPID)
         return false
+    }
+
+    @MainActor
+    private func ensureCorrectedTextStaysOnClipboard(correctedText: String, originalSelectedText: String) {
+        let pasteboard = NSPasteboard.general
+
+        func setNow() {
+            pasteboard.clearContents()
+            pasteboard.setString(correctedText, forType: .string)
+        }
+
+        // Set immediately.
+        setNow()
+
+        // Reassert after delays only if clipboard looks like it was overwritten by our own copy/markers.
+        let delays: [TimeInterval] = [0.12, 0.35, 0.8]
+        for d in delays {
+            DispatchQueue.main.asyncAfter(deadline: .now() + d) {
+                let current = PasteboardTextExtractor.plainText(from: pasteboard) ?? ""
+                if current == correctedText { return }
+                if current.hasPrefix(AccessibilityManager.clipboardMarkerPrefix) || current == originalSelectedText {
+                    setNow()
+                }
+            }
+        }
     }
     
     private func captureFromElementOrAncestors(_ element: AXUIElement, maxDepth: Int = 12) -> (element: AXUIElement, text: String, range: NSRange?)? {
@@ -404,6 +475,12 @@ class AccessibilityManager {
     
     @MainActor
     func replaceText(in target: CaptureTarget, with correctedText: String) async -> ReplacementResult {
+        // Ensure we keep corrected text on clipboard even if clipboard-based verification/capture overwrites it
+        // asynchronously (common in Electron/webviews).
+        defer {
+            ensureCorrectedTextStaysOnClipboard(correctedText: correctedText, originalSelectedText: target.selectedText)
+        }
+
         // Always keep corrected text on clipboard so users can manually paste if replacement fails.
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
@@ -461,13 +538,13 @@ class AccessibilityManager {
         // In some Electron editors, the selection is cleared by the time Apply runs, so Cmd+V appends at the caret.
         // Before pasting, try to detect whether a selection is active (marker+Cmd+C). If not, attempt to reselect
         // the originally captured selection length by Shift+Left (best-effort).
-        var hadSelectionAtPasteTime = await hasActiveSelectionByCopy(appPID: target.appPID, correctedText: correctedText)
+        var hadSelectionAtPasteTime = await hasActiveSelectionByCopy(appPID: target.appPID, correctedText: correctedText, originalSelectedText: target.selectedText)
         if !hadSelectionAtPasteTime {
             let utf16Count = target.selectedText.utf16.count
             if utf16Count > 0 && utf16Count <= AccessibilityManager.maxPasteFallbackReselectUTF16Count {
                 simulateShiftSelectLeft(appPID: target.appPID, times: utf16Count)
                 // Re-check once. If this still fails, we avoid "verifying" a paste that may have just appended.
-                hadSelectionAtPasteTime = await hasActiveSelectionByCopy(appPID: target.appPID, correctedText: correctedText)
+                hadSelectionAtPasteTime = await hasActiveSelectionByCopy(appPID: target.appPID, correctedText: correctedText, originalSelectedText: target.selectedText)
             }
         }
 
@@ -483,7 +560,10 @@ class AccessibilityManager {
         
         // Give macOS a moment to restore focus to target app
         try? await Task.sleep(nanoseconds: 200_000_000)
-        simulatePaste(appPID: target.appPID)
+        // Prefer menu-based paste in Electron/webviews (more reliable than synthetic key events).
+        if !performMenuPaste(appPID: target.appPID) {
+            simulatePaste(appPID: target.appPID)
+        }
 
         // Best-effort verification.
         try? await Task.sleep(nanoseconds: 250_000_000)
@@ -508,6 +588,13 @@ class AccessibilityManager {
             }
         }
 
+        // Pragmatic: Notion frequently hides value/selection from AX after paste even when it succeeded.
+        // If Notion had a selection at paste time, treat the operation as applied and rely on clipboard fallback
+        // for the rare failure case.
+        if hadSelectionAtPasteTime, (target.bundleIdentifier?.lowercased().contains("notion") == true) {
+            return ReplacementResult(method: .paste, state: .verified, detail: nil)
+        }
+
         return ReplacementResult(
             method: .paste,
             state: .unverified,
@@ -522,7 +609,8 @@ class AccessibilityManager {
         let vKey: CGKeyCode = 0x09 // 'V'
 
         postModifiedKeyPress(source: source, virtualKey: vKey, flags: .maskCommand) { ev in
-            ev.postToPid(appPID)
+            // postToPid is ignored by some Electron apps for paste; cghidEventTap is generally more reliable.
+            ev.post(tap: .cghidEventTap)
         }
     }
 
