@@ -27,9 +27,7 @@ struct SettingsView: View {
                 
                 SettingsSection(title: "Clipboard") {
                     VStack(alignment: .leading, spacing: 8) {
-                        Toggle("Keep new text in the clipboard", isOn: $settings.keepNewTextInClipboard)
-                        
-                        Text("When enabled, McWritely leaves the corrected text on your clipboard after Apply.")
+                        Text("McWritely always leaves the corrected text on your clipboard after Apply.")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }

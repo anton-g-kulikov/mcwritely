@@ -62,11 +62,19 @@ final class McWritelyTests: XCTestCase {
     }
     
     func testKeepNewTextInClipboardDefaultIsFalse() throws {
-        let settings = Settings.shared
-        let original = settings.keepNewTextInClipboard
-        settings.keepNewTextInClipboard = false
-        XCTAssertFalse(settings.keepNewTextInClipboard)
-        settings.keepNewTextInClipboard = original
+        throw XCTSkip("Removed in 2.0.0: corrected text is always kept on the clipboard after Apply.")
+    }
+
+    func testSettingsMigrationRemovesLegacyClipboardKey() throws {
+        let suiteName = "com.antonkulikov.mcwritely.tests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defaults.set(true, forKey: "keep_new_text_in_clipboard")
+        XCTAssertNotNil(defaults.object(forKey: "keep_new_text_in_clipboard"))
+
+        SettingsMigration.migrate(userDefaults: defaults)
+        XCTAssertNil(defaults.object(forKey: "keep_new_text_in_clipboard"))
+
+        defaults.removePersistentDomain(forName: suiteName)
     }
 
     func testRTFConversionToPlainText() throws {

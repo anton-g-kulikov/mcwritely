@@ -141,8 +141,10 @@ class AccessibilityManager {
     
     @MainActor
     func replaceText(in target: CaptureTarget, with correctedText: String) async -> Bool {
-        // ALWAYS handle clipboard if settings request it, or if we anticipate AX failure
-        let shouldKeepInClipboard = Settings.shared.keepNewTextInClipboard
+        // Always keep corrected text on clipboard so users can manually paste if replacement fails.
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString(correctedText, forType: .string)
         
         // Try AX first
         // ENSURE frontmost before AX write too, not just paste
@@ -156,12 +158,6 @@ class AccessibilityManager {
         
         if axSuccess {
             print("McWritely: AX Write reported success.")
-            // Even if AX succeeds, we might need to update clipboard
-            if shouldKeepInClipboard {
-                let pasteboard = NSPasteboard.general
-                pasteboard.clearContents()
-                pasteboard.setString(correctedText, forType: .string)
-            }
             return true
         }
         
@@ -171,12 +167,6 @@ class AccessibilityManager {
             print("McWritely: Target app not frontmost, paste cancelled.")
             return false
         }
-        
-        let pasteboard = NSPasteboard.general
-        let originalItems = snapshotPasteboardItems(pasteboard)
-        
-        pasteboard.clearContents()
-        pasteboard.setString(correctedText, forType: .string)
         
         // Give macOS a moment to restore focus to target app
         try? await Task.sleep(nanoseconds: 200_000_000)
@@ -188,11 +178,6 @@ class AccessibilityManager {
             simulatePaste()
         }
 
-        if !shouldKeepInClipboard {
-            // Give time for the app to process the paste before restoring clipboard
-            try? await Task.sleep(nanoseconds: 500_000_000)
-            restorePasteboardItems(pasteboard, items: originalItems)
-        }
         return true
     }
     
