@@ -22,6 +22,8 @@
   - [x] Harden clipboard fallback for Electron: delay after hotkey, try multiple injection routes (menu copy, session-tap, pid), relax pasteboard gating, and run even when focused AX element is unavailable (Est: 1-2h)
   - [x] Ensure hotkey triggers a capture attempt even when capture fails (avoid empty no-op state); show spinner + actionable error (Est: 30-60m)
   - [x] Capture selection before showing panel (avoid clearing Electron selection before Cmd+C fallback) (Est: 30-60m)
+  - [ ] Keep panel visible when app deactivates during capture (avoid "blink then close") (Est: 15-30m)
+  - [ ] Improve AX menu-copy fallback to reliably press Edit -> Copy (avoid pressing wrong 'c' menu item) (Est: 30-60m)
   - [ ] Manual verification in Codex app + VS Code (Electron) (Est: 15-30m)
 
 ### UI

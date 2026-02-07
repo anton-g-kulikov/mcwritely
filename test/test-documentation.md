@@ -146,6 +146,15 @@
   - In Codex: select text, trigger McWritely hotkey; confirm the selection remains and McWritely shows the captured text.
 - **Expected**: No “focus hop” that clears selection prior to capture; captured text appears in McWritely.
 
+### CORE-TEST-030: Panel Does Not Auto-Hide During Capture (Manual)
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify McWritely does not close itself immediately when the originating app regains focus during a hotkey-triggered capture.
+- **Steps**:
+  - In Codex/VS Code: select text, trigger hotkey.
+  - Observe whether McWritely panel remains visible (even if it shows an error).
+- **Expected**: Panel stays open until the user closes it or Apply succeeds.
+
 ### CORE-TEST-024: Text Normalization For Verification
 
 - **Status**: ✅ COMPLETED
