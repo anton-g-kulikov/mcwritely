@@ -26,23 +26,33 @@ class AccessibilityManager {
 
     
     @MainActor
-    func captureSelectedText() async -> CaptureTarget? {
-        let apps = NSWorkspace.shared.runningApplications
-        var targetApp: NSRunningApplication?
-        
-        // 1. First, look for the frontmost app that ISN'T Writely
-        // When clicking a menu bar icon, the previous app often still has focus
-        for app in apps {
-            if app.bundleIdentifier != "com.antonkulikov.mcwritely" && app.isActive {
-                targetApp = app
-                break
+    func captureSelectedText(preferredApp: NSRunningApplication? = nil) async -> CaptureTarget? {
+        let mcwritelyBundleID = Bundle.main.bundleIdentifier ?? "com.antonkulikov.mcwritely"
+
+        // Prefer an explicit app (from hotkey time) to avoid the “McWritely is frontmost” trap.
+        var targetApp = preferredApp
+        if targetApp?.bundleIdentifier == mcwritelyBundleID {
+            targetApp = nil
+        }
+
+        // Next best: the current frontmost app.
+        if targetApp == nil {
+            let frontmost = NSWorkspace.shared.frontmostApplication
+            if frontmost?.bundleIdentifier != mcwritelyBundleID {
+                targetApp = frontmost
             }
         }
-        
-        // 2. Fallback: Look for any recently active app (ignoring background/hidden processes)
+
+        // Menu bar / panel interaction case: use last known non-McWritely app.
         if targetApp == nil {
-            // Sort by launch date or just pick the first visible non-Writely app
-            targetApp = apps.filter { $0.bundleIdentifier != "com.antonkulikov.mcwritely" && !$0.isHidden && $0.activationPolicy == .regular }.first
+            targetApp = AppFocusTracker.shared.lastNonMcWritelyApp()
+        }
+
+        // Final fallback: any visible regular app.
+        if targetApp == nil {
+            targetApp = NSWorkspace.shared.runningApplications.first {
+                $0.bundleIdentifier != mcwritelyBundleID && !$0.isHidden && $0.activationPolicy == .regular
+            }
         }
         
         guard let finalApp = targetApp else {
@@ -93,27 +103,25 @@ class AccessibilityManager {
         let originalChangeCount = pasteboard.changeCount
         _ = await ensureAppIsFrontmost(finalApp)
         simulateCopy()
-        
-        // Delay for clipboard synchronization
-        try? await Task.sleep(nanoseconds: 200_000_000)
-        
-        defer {
-            restorePasteboardItems(pasteboard, items: originalItems)
-        }
-        
-        let newChangeCount = pasteboard.changeCount
-        guard newChangeCount != originalChangeCount else {
-            return nil
-        }
-        
-        if let text = pasteboard.string(forType: .string), !text.isEmpty {
-            return CaptureTarget(
-                element: axElement,
-                appName: finalApp.localizedName ?? "Active App",
-                appPID: finalApp.processIdentifier,
-                bundleIdentifier: finalApp.bundleIdentifier,
-                selectedText: text
-            )
+
+        defer { restorePasteboardItems(pasteboard, items: originalItems) }
+
+        // Wait for the pasteboard to actually change. Electron-style apps can be slower under load.
+        let maxAttempts = 8
+        for _ in 0..<maxAttempts {
+            try? await Task.sleep(nanoseconds: 120_000_000)
+            if pasteboard.changeCount == originalChangeCount {
+                continue
+            }
+            if let text = PasteboardTextExtractor.plainText(from: pasteboard) {
+                return CaptureTarget(
+                    element: axElement,
+                    appName: finalApp.localizedName ?? "Active App",
+                    appPID: finalApp.processIdentifier,
+                    bundleIdentifier: finalApp.bundleIdentifier,
+                    selectedText: text
+                )
+            }
         }
         
         return nil

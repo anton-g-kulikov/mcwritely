@@ -130,15 +130,17 @@ struct CorrectionView: View {
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("TriggerCorrection"))) { notification in
             if let target = notification.object as? CaptureTarget {
                 startChecking(target: target)
+            } else if let app = notification.object as? NSRunningApplication {
+                startChecking(preferredApp: app)
             } else {
                 startChecking()
             }
         }
     }
     
-    private func startChecking(target: CaptureTarget? = nil) {
+    private func startChecking(target: CaptureTarget? = nil, preferredApp: NSRunningApplication? = nil) {
         Task {
-            await viewModel.processSelection(preCapturedTarget: target)
+            await viewModel.processSelection(preCapturedTarget: target, preferredApp: preferredApp)
         }
     }
 }

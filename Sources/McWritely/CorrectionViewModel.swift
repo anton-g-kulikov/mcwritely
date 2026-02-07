@@ -24,7 +24,7 @@ class CorrectionViewModel: ObservableObject {
     }
     
     @MainActor
-    func processSelection(preCapturedTarget: CaptureTarget? = nil) async {
+    func processSelection(preCapturedTarget: CaptureTarget? = nil, preferredApp: NSRunningApplication? = nil) async {
         self.errorMessage = nil
         
         // 1. Check Permissions first
@@ -38,7 +38,7 @@ class CorrectionViewModel: ObservableObject {
         if let preCapturedTarget {
             targetToUse = preCapturedTarget
         } else {
-            targetToUse = await AccessibilityManager.shared.captureSelectedText()
+            targetToUse = await AccessibilityManager.shared.captureSelectedText(preferredApp: preferredApp)
         }
         
         guard let target = targetToUse else {

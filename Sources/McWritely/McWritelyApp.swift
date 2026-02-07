@@ -11,7 +11,11 @@ struct McWritelyApp: App {
             VStack(spacing: 0) {
                 Button("Open McWritely") {
                     PanelManager.shared.show()
-                    NotificationCenter.default.post(name: NSNotification.Name("TriggerCorrection"), object: nil)
+                    // When the menu bar UI is active, McWritely is frontmost; use the last non-McWritely app.
+                    NotificationCenter.default.post(
+                        name: NSNotification.Name("TriggerCorrection"),
+                        object: AppFocusTracker.shared.lastNonMcWritelyApp()
+                    )
                 }
                 .padding()
                 
@@ -57,6 +61,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func applicationDidFinishLaunching(_ notification: Notification) {
+        AppFocusTracker.shared.start()
+
         // Initialize Panel
         PanelManager.shared.setup(viewModel: viewModel)
         

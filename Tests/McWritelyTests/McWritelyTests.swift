@@ -68,4 +68,31 @@ final class McWritelyTests: XCTestCase {
         XCTAssertFalse(settings.keepNewTextInClipboard)
         settings.keepNewTextInClipboard = original
     }
+
+    func testRTFConversionToPlainText() throws {
+        let attributed = NSAttributedString(string: "Hello RTF")
+        let rtfData = try attributed.data(
+            from: NSRange(location: 0, length: attributed.length),
+            documentAttributes: [.documentType: NSAttributedString.DocumentType.rtf]
+        )
+
+        let extracted = PasteboardTextExtractor.plainText(fromRTF: rtfData)
+        XCTAssertEqual(extracted, "Hello RTF")
+    }
+
+    func testHTMLConversionToPlainText() throws {
+        let html = "<html><body><b>Hello</b> world</body></html>"
+        let data = try XCTUnwrap(html.data(using: .utf8))
+
+        let extracted = PasteboardTextExtractor.plainText(fromHTML: data)
+        let s = try XCTUnwrap(extracted)
+        XCTAssertTrue(s.contains("Hello"))
+        XCTAssertTrue(s.contains("world"))
+    }
+
+    func testReadObjectsCoercionExtractsString() throws {
+        let objects: [Any] = [NSString(string: "Hello from coercion")]
+        let extracted = PasteboardTextExtractor.plainText(fromReadObjects: objects)
+        XCTAssertEqual(extracted, "Hello from coercion")
+    }
 }

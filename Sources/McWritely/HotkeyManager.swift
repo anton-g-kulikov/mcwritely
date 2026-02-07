@@ -81,8 +81,9 @@ class HotkeyManager {
     
     private func handleHotKeyPress() {
         print("McWritely: Hotkey triggered!")
+        let preferredApp = NSWorkspace.shared.frontmostApplication
         Task { @MainActor in
-            let target = await AccessibilityManager.shared.captureSelectedText()
+            let target = await AccessibilityManager.shared.captureSelectedText(preferredApp: preferredApp)
             self.onTrigger?(target)
         }
     }
