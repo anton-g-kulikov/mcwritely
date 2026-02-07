@@ -2,10 +2,11 @@
 
 ## Current Tasks
 
-- [x] **RELEASE-TASK-009: Bump version to 1.4.3 and rebuild DMG** - ✅ **COMPLETED**
-- [x] **RELEASE-TASK-008: Bump version to 1.4.2 (Robust Replacement Fix)** - ✅ **COMPLETED**
-- [x] **RELEASE-TASK-007: Bump version to 1.4.1 and rebuild DMG** - ✅ **COMPLETED** - Maintenance release for focus fix.
-- [x] **RELEASE-TASK-006: Bump version to 1.4.0 and rebuild DMG** - ✅ **COMPLETED** - Major cleanup of permissions.
+- [ ] **CORE-TASK-008: Improve selection capture reliability in Electron/other apps** - 🟡 **IN PROGRESS** - Frontmost app tracking + richer pasteboard extraction + clipboard capture retries (Est: 4-6h)
+- [ ] **CORE-TASK-009: Always keep corrected text in clipboard after Apply** - 📋 **NOT STARTED** - Remove clipboard-restore on Apply; corrected text remains available on failure (Est: 1-2h)
+- [ ] **CORE-TASK-010: Verified replacement results + truthful UI behavior** - 📋 **NOT STARTED** - Don’t close panel unless replacement is verified; show actionable failure states (Est: 4-8h)
+- [ ] **CORE-TASK-011: Add AX range/value replacement strategy before paste fallback** - 📋 **NOT STARTED** - Use `kAXSelectedTextRange` + `kAXValue` where available (Est: 3-6h)
+- [ ] **RELEASE-TASK-010: Release 2.0.0 (version bump + changelog + rebuilt app/DMG)** - 📋 **NOT STARTED** (Est: 1-2h)
 
 ## Completed Tasks
 
@@ -66,6 +67,10 @@
 - [x] **RELEASE-TASK-002: Tag v1.2 and establish release process** - ✅ **COMPLETED** - Create git tag and define release workflow
 - [x] **RELEASE-TASK-003: Bump version to 1.3.1 and rebuild DMG** - ✅ **COMPLETED** - Update Info.plist and CHANGELOG.md, then package the application.
 - [x] **RELEASE-TASK-004: Bump version to 1.3.2 and rebuild DMG** - ✅ **COMPLETED** - Update Info.plist and CHANGELOG.md, then package the application.
+- [x] **RELEASE-TASK-006: Bump version to 1.4.0 and rebuild DMG** - ✅ **COMPLETED** - Major cleanup of permissions.
+- [x] **RELEASE-TASK-007: Bump version to 1.4.1 and rebuild DMG** - ✅ **COMPLETED** - Maintenance release for focus fix.
+- [x] **RELEASE-TASK-008: Bump version to 1.4.2 (Robust Replacement Fix)** - ✅ **COMPLETED**
+- [x] **RELEASE-TASK-009: Bump version to 1.4.3 and rebuild DMG** - ✅ **COMPLETED**
 
 ## Task Status Legend
 

@@ -60,6 +60,26 @@
 - **Description**: Verify that the current application version is displayed at the bottom of the Settings screen.
 - **Expected**: The text "Version 1.3.1" (or current bundle version) is visible and styled as small secondary text.
 
+### CORE-TEST-009: Rich Text Conversion (RTF -> Plain Text)
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify that RTF data can be converted into a plain text string for clipboard fallback capture.
+- **Inputs**: RTF `Data` produced from an attributed string (for example "Hello RTF").
+- **Expected**: Extracted plain text equals the original string.
+
+### CORE-TEST-010: Rich Text Conversion (HTML -> Plain Text)
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify that HTML data can be converted into a plain text string for clipboard fallback capture.
+- **Inputs**: HTML `Data` such as `<b>Hello</b> world`.
+- **Expected**: Extracted plain text is non-empty and contains "Hello" and "world" in the correct order.
+
+### CORE-TEST-011: Clipboard Coercion Fallback (NSString Read)
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify that the clipboard extraction logic can fall back to AppKit coercion (`readObjects(forClasses: [NSString.self])`) when a direct `.string` flavor is missing.
+- **Expected**: The helper path returns a non-empty plain string when provided a string-like object.
+
 ## Test Coverage Goals
 
 - **Unit Tests**: Coverage for all core logic including selection handlers and API services.
