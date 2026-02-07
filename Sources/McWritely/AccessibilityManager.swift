@@ -66,24 +66,12 @@ class AccessibilityManager {
         print("McWritely: Attempting capture from \(finalApp.localizedName ?? "Unknown App") (\(finalApp.bundleIdentifier ?? "no-id"))")
         
         let appElement = AXUIElementCreateApplication(finalApp.processIdentifier)
-        var focusedElement: AnyObject?
-        let result = AXUIElementCopyAttributeValue(appElement, kAXFocusedUIElementAttribute as CFString, &focusedElement)
-        
-        guard result == .success, let element = focusedElement else {
-            print("McWritely: Could not find focused element in \(finalApp.localizedName ?? "app")")
-            return nil
-        }
-        
-        let elementRef = element as CFTypeRef
-        guard CFGetTypeID(elementRef) == AXUIElementGetTypeID() else {
-            print("McWritely: Focused element is not an AXUIElement in \(finalApp.localizedName ?? "app")")
-            return nil
-        }
-        let axElement = unsafeBitCast(element, to: AXUIElement.self)
+        let focused = readFocusedAXElement(from: appElement) ?? readFocusedAXElement(from: AXUIElementCreateSystemWide())
+        let elementForTarget = focused ?? appElement
 
         // Try AX first: in Electron/webviews the focused element often does not expose selection attributes.
         // Walk up the parent chain and attempt multiple AX strategies (selectedText, stringForRange, value+range).
-        if let found = captureFromElementOrAncestors(axElement) {
+        if let focused, let found = captureFromElementOrAncestors(focused) {
             return CaptureTarget(
                 element: found.element,
                 appName: finalApp.localizedName ?? "Active App",
@@ -104,63 +92,58 @@ class AccessibilityManager {
         let marker = "MCWR_COPY_MARKER_\(UUID().uuidString)"
         pasteboard.clearContents()
         pasteboard.setString(marker, forType: .string)
-        let markerChangeCount = pasteboard.changeCount
+        _ = pasteboard.changeCount
 
+        // Give Electron apps a moment after hotkey handling before issuing copy.
+        try? await Task.sleep(nanoseconds: 50_000_000)
+
+        // Try accessibility menu copy first (if available), then key-chord injection.
+        performMenuCopy(appPID: finalApp.processIdentifier)
         simulateCopy(appPID: finalApp.processIdentifier)
 
         defer { restorePasteboardItems(pasteboard, items: originalItems) }
 
         // Wait for the pasteboard to actually change. Electron-style apps can be slower under load.
-        let maxAttempts = 10
+        let maxAttempts = 20
         for attempt in 0..<maxAttempts {
             try? await Task.sleep(nanoseconds: 120_000_000)
 
             // If copy never happened, pasteboard may remain our marker.
             let plain = PasteboardTextExtractor.plainText(from: pasteboard)
-            let changed = pasteboard.changeCount != markerChangeCount
-            if changed, let plain, plain != marker {
+            if let plain, plain != marker {
                 return CaptureTarget(
-                    element: axElement,
+                    element: elementForTarget,
                     appName: finalApp.localizedName ?? "Active App",
                     appPID: finalApp.processIdentifier,
                     bundleIdentifier: finalApp.bundleIdentifier,
                     selectedText: plain,
-                    selectedTextRange: readAXRange(axElement, attribute: kAXSelectedTextRangeAttribute as CFString)
+                    selectedTextRange: focused.flatMap { readAXRange($0, attribute: kAXSelectedTextRangeAttribute as CFString) }
                 )
             }
 
-            // Midway, try an accessibility menu-based Copy as a fallback (helps when CGEvent is ignored).
-            if attempt == 4 {
+            // Retry copy a couple of times; some Electron editors ignore the first injected command.
+            if attempt == 4 || attempt == 10 {
                 _ = await ensureAppIsFrontmost(finalApp)
                 performMenuCopy(appPID: finalApp.processIdentifier)
+                simulateCopy(appPID: finalApp.processIdentifier)
             }
         }
         
         return nil
     }
-    
+
     private func simulateCopy(appPID: pid_t) {
         let source = CGEventSource(stateID: .combinedSessionState)
-        let cmdKey: CGKeyCode = 0x37 // left command
-        let cKey: CGKeyCode = 0x08 // 'C'
-
-        let cmdDown = CGEvent(keyboardEventSource: source, virtualKey: cmdKey, keyDown: true)
-        let cDown = CGEvent(keyboardEventSource: source, virtualKey: cKey, keyDown: true)
-        let cUp = CGEvent(keyboardEventSource: source, virtualKey: cKey, keyDown: false)
-        let cmdUp = CGEvent(keyboardEventSource: source, virtualKey: cmdKey, keyDown: false)
-
-        cDown?.flags = .maskCommand
-        cUp?.flags = .maskCommand
 
         // Prefer posting directly to the target PID. Some Electron apps ignore session-tap events.
-        let post: (CGEvent) -> Void = { ev in
+        postCopyChord(source: source) { ev in
             ev.postToPid(appPID)
         }
 
-        if let e = cmdDown { post(e) }
-        if let e = cDown { post(e) }
-        if let e = cUp { post(e) }
-        if let e = cmdUp { post(e) }
+        // Fallback to session tap for apps that ignore postToPid.
+        postCopyChord(source: source) { ev in
+            ev.post(tap: .cgAnnotatedSessionEventTap)
+        }
     }
 
     private func performMenuCopy(appPID: pid_t) {
@@ -203,6 +186,43 @@ class AccessibilityManager {
         return nil
     }
 
+    private func readFocusedAXElement(from container: AXUIElement) -> AXUIElement? {
+        var focusedObj: AnyObject?
+        let result = AXUIElementCopyAttributeValue(container, kAXFocusedUIElementAttribute as CFString, &focusedObj)
+        guard result == .success, let focusedObj else { return nil }
+        let ref = focusedObj as CFTypeRef
+        guard CFGetTypeID(ref) == AXUIElementGetTypeID() else { return nil }
+        return unsafeBitCast(focusedObj, to: AXUIElement.self)
+    }
+
+    private func postCopyChord(source: CGEventSource?, post: (CGEvent) -> Void) {
+        let cmdKey: CGKeyCode = 0x37 // left command
+        let cKey: CGKeyCode = 0x08 // 'C'
+
+        guard
+            let cmdDown = CGEvent(keyboardEventSource: source, virtualKey: cmdKey, keyDown: true),
+            let cDown = CGEvent(keyboardEventSource: source, virtualKey: cKey, keyDown: true),
+            let cUp = CGEvent(keyboardEventSource: source, virtualKey: cKey, keyDown: false),
+            let cmdUp = CGEvent(keyboardEventSource: source, virtualKey: cmdKey, keyDown: false)
+        else {
+            return
+        }
+
+        // Make modifier state explicit for apps that don't track it across events.
+        cmdDown.flags = .maskCommand
+        cDown.flags = .maskCommand
+        cUp.flags = .maskCommand
+        cmdUp.flags = .maskCommand
+
+        post(cmdDown)
+        usleep(5_000)
+        post(cDown)
+        usleep(5_000)
+        post(cUp)
+        usleep(5_000)
+        post(cmdUp)
+    }
+    
     private func captureFromElementOrAncestors(_ element: AXUIElement, maxDepth: Int = 12) -> (element: AXUIElement, text: String, range: NSRange?)? {
         var current: AXUIElement? = element
         var depth = 0
