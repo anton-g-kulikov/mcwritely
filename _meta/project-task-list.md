@@ -27,7 +27,7 @@
 - [x] **RELEASE-TASK-011: Release 2.0.1 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
 - [ ] **RELEASE-TASK-012: Release 2.0.2 (version bump + changelog + rebuilt app/DMG)** - 🟡 **IN PROGRESS** (Est: 1-2h)
   - [ ] Complete `CORE-TASK-013` and update release notes if needed
-  - [ ] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
+  - [x] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
   - [ ] Smoke-test selection capture in Codex + VS Code + Notion
 
 ### CONFIG
