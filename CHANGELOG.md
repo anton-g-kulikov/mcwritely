@@ -5,9 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.4.4] - 2026-02-05
-### Changed
-- Built updated DMG.
+## [2.0.5] - 2026-02-07
+### Fixed
+- Settings now refreshes Accessibility permission state when the window opens and when the app becomes active, so the UI reflects granted access.
+
+## [2.0.4] - 2026-02-07
+### Fixed
+- Reduced false “could not verify paste” messages after successful Apply (notably in Notion) by normalizing verification text and re-capturing selection to confirm paste.
+
+## [2.0.3] - 2026-02-07
+### Fixed
+- Selection capture in Electron editors (Codex, VS Code) now falls back to clipboard capture even when the app does not expose a focused accessibility element.
+- Clipboard fallback is more robust: uses menu-copy + multiple key injection routes and no longer relies on pasteboard `changeCount` to accept a captured string.
+
+## [2.0.2] - 2026-02-07
+### Fixed
+- Improved selection capture in Electron-based apps (Codex, VS Code) by:
+  - walking up the focused accessibility element parent chain to find a better text container
+  - using AX parameterized `stringForRange` / `attributedStringForRange` when `selectedTextRange` is available
+  - sending a full Cmd+C key chord directly to the target PID during clipboard fallback (reduces ignored copy events)
+
+## [2.0.1] - 2026-02-07
+### Fixed
+- Opening McWritely from the menu bar no longer triggers an automatic capture attempt (prevents brief "No text selected" flash).
+- Reduced stale async state updates while capturing selection.
 
 ## [2.0.0] - 2026-02-07
 ### Added
@@ -18,30 +39,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Corrected text is always kept on the clipboard after Apply.
 
-## [2.0.1] - 2026-02-07
-### Fixed
-- Opening McWritely from the menu bar no longer triggers an automatic capture attempt (prevents brief "No text selected" flash).
-- Reduced stale async state updates while capturing selection.
-
-## [2.0.3] - 2026-02-07
-### Fixed
-- Selection capture in Electron editors (Codex, VS Code) now falls back to clipboard capture even when the app does not expose a focused accessibility element.
-- Clipboard fallback is more robust: uses menu-copy + multiple key injection routes and no longer relies on pasteboard `changeCount` to accept a captured string.
-
-## [2.0.4] - 2026-02-07
-### Fixed
-- Reduced false “could not verify paste” messages after successful Apply (notably in Notion) by normalizing verification text and re-capturing selection to confirm paste.
-
-## [2.0.5] - 2026-02-07
-### Fixed
-- Settings now refreshes Accessibility permission state when the window opens and when the app becomes active, so the UI reflects granted access.
-
-## [2.0.2] - 2026-02-07
-### Fixed
-- Improved selection capture in Electron-based apps (Codex, VS Code) by:
-  - walking up the focused accessibility element parent chain to find a better text container
-  - using AX parameterized `stringForRange` / `attributedStringForRange` when `selectedTextRange` is available
-  - sending a full Cmd+C key chord directly to the target PID during clipboard fallback (reduces ignored copy events)
+## [1.4.4] - 2026-02-05
+### Changed
+- Built updated DMG.
 
 ## [1.4.3] - 2026-02-05
 ### Changed
