@@ -117,6 +117,15 @@
 - **Description**: Verify that the accessibility-based text capture correctly retrieves highlighted text from a target application.
 - **Expected**: The captured string should match the actual selection in a controlled test app.
 
+### CORE-TEST-023: Manual Validation in Electron Editors (Codex, VS Code)
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Validate that clipboard-fallback capture retrieves selected text in Electron-based editors where AX selection APIs are missing or unreliable.
+- **Steps**:
+  - In Codex app: select a short snippet (include non-ASCII), trigger `Cmd+Opt+Shift+G`, ensure McWritely shows the selection.
+  - In VS Code: select a short snippet in the editor, trigger `Cmd+Opt+Shift+G`, ensure McWritely shows the selection.
+- **Expected**: McWritely’s panel populates with the selected text (no “No text selected” error).
+
 ### CORE-TEST-006: Prompt Construction Logic
 
 - **Status**: 📋 NOT STARTED

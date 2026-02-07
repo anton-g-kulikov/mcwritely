@@ -14,6 +14,7 @@
   - [x] Add `kAXStringForRangeParameterizedAttribute`/`kAXAttributedStringForRangeParameterizedAttribute` capture path when `selectedTextRange` is available
   - [x] Improve Cmd+C injection by posting a full key chord directly to the target PID (fallback to session tap)
   - [x] Add unit tests for selection text resolution precedence (pure logic) and update test docs
+  - [ ] Harden clipboard fallback for Electron: delay after hotkey, try multiple injection routes (menu copy, session-tap, pid), and relax pasteboard gating (Est: 1-2h)
   - [ ] Manual verification in Codex app + VS Code (Electron) (Est: 15-30m)
 
 ### UI
