@@ -19,6 +19,10 @@
 - [x] **RELEASE-TASK-010: Release 2.0.0 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
 - [x] **RELEASE-TASK-011: Release 2.0.1 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
 
+### CONFIG
+
+- [ ] **CONFIG-TASK-005: Restore Applications alias in DMG installer** - 🟡 **IN PROGRESS** - Ensure `McWritely.dmg` is built from a folder containing `McWritely.app` and an `/Applications` symlink (Est: 0.5-1h)
+
 ## Completed Tasks
 
 ### CORE
