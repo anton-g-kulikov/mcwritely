@@ -71,6 +71,12 @@
 - **Description**: Verify that invalid ranges (negative/out of bounds) are rejected safely.
 - **Expected**: Helper returns `nil` (or equivalent) without crashing.
 
+### UI-TEST-018: ViewModel Reset Clears UI State
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify that resetting the correction view model clears user-visible state (texts, error, target, processing flag).
+- **Expected**: All fields are reset to defaults without crashing.
+
 ### CORE-TEST-005: Selection Capture Validation
 
 - **Status**: 📋 NOT STARTED
