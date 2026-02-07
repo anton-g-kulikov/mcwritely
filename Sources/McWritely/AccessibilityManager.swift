@@ -95,7 +95,7 @@ class AccessibilityManager {
         _ = pasteboard.changeCount
 
         // Give Electron apps a moment after hotkey handling before issuing copy.
-        try? await Task.sleep(nanoseconds: 50_000_000)
+        try? await Task.sleep(nanoseconds: 120_000_000)
 
         // Try accessibility menu copy first (if available), then key-chord injection.
         performMenuCopy(appPID: finalApp.processIdentifier)
@@ -133,15 +133,20 @@ class AccessibilityManager {
     }
 
     private func simulateCopy(appPID: pid_t) {
-        let source = CGEventSource(stateID: .combinedSessionState)
+        // Some Electron apps behave better when we post only the "C" key with an explicit .maskCommand flag
+        // (rather than sending a separate Command key down/up sequence).
+        let source = CGEventSource(stateID: .hidSystemState) ?? CGEventSource(stateID: .combinedSessionState)
+        let cKey: CGKeyCode = 0x08 // 'C'
 
-        // Prefer posting directly to the target PID. Some Electron apps ignore session-tap events.
-        postCopyChord(source: source) { ev in
+        postModifiedKeyPress(source: source, virtualKey: cKey, flags: .maskCommand) { ev in
             ev.postToPid(appPID)
         }
 
-        // Fallback to session tap for apps that ignore postToPid.
-        postCopyChord(source: source) { ev in
+        // Fallback taps for apps that ignore postToPid.
+        postModifiedKeyPress(source: source, virtualKey: cKey, flags: .maskCommand) { ev in
+            ev.post(tap: .cghidEventTap)
+        }
+        postModifiedKeyPress(source: source, virtualKey: cKey, flags: .maskCommand) { ev in
             ev.post(tap: .cgAnnotatedSessionEventTap)
         }
     }
@@ -155,35 +160,48 @@ class AccessibilityManager {
         guard CFGetTypeID(ref) == AXUIElementGetTypeID() else { return }
         let menubar = unsafeBitCast(menubarObj, to: AXUIElement.self)
 
-        // Find a menu item with cmdChar == "c" (avoids localization issues).
-        if let copyItem = findMenuItemByCmdChar(root: menubar, cmdChar: "c") {
-            _ = AXUIElementPerformAction(copyItem, kAXPressAction as CFString)
-        }
+        // Find all menu items with cmdChar == "c" and choose the best candidate.
+        // This avoids pressing the wrong "c" item (Copy Style, Copy Link, etc).
+        var candidates: [AXMenuCopyCandidate] = []
+        collectMenuCopyCandidates(root: menubar, into: &candidates, limit: 5000)
+        if candidates.isEmpty { return }
+
+        let indexed = candidates.enumerated().map { (candidate: $0.element.candidate, index: $0.offset) }
+        guard let (_, idx) = MenuCopyCandidateSelector.chooseBest(from: indexed) else { return }
+        _ = AXUIElementPerformAction(candidates[idx].element, kAXPressAction as CFString)
     }
 
-    private func findMenuItemByCmdChar(root: AXUIElement, cmdChar: String) -> AXUIElement? {
+    private struct AXMenuCopyCandidate {
+        let element: AXUIElement
+        let candidate: MenuCopyCandidate
+    }
+
+    private func collectMenuCopyCandidates(root: AXUIElement, into out: inout [AXMenuCopyCandidate], limit: Int) {
+        if out.count >= limit { return }
+
         var childrenObj: AnyObject?
         let res = AXUIElementCopyAttributeValue(root, kAXChildrenAttribute as CFString, &childrenObj)
-        guard res == .success, let children = childrenObj as? [AnyObject] else { return nil }
+        guard res == .success, let children = childrenObj as? [AnyObject] else { return }
 
         for child in children {
             let childRef = child as CFTypeRef
             if CFGetTypeID(childRef) != AXUIElementGetTypeID() { continue }
             let el = unsafeBitCast(child, to: AXUIElement.self)
 
-            var cmdObj: AnyObject?
-            if AXUIElementCopyAttributeValue(el, kAXMenuItemCmdCharAttribute as CFString, &cmdObj) == .success,
-               let s = cmdObj as? String,
-               s.lowercased() == cmdChar.lowercased() {
-                return el
+            let cmdChar = readAXString(el, attribute: kAXMenuItemCmdCharAttribute as CFString)
+            let cmdModifiers = readAXInt(el, attribute: kAXMenuItemCmdModifiersAttribute as CFString)
+            let title = readAXString(el, attribute: kAXTitleAttribute as CFString)
+            let enabled = readAXBool(el, attribute: kAXEnabledAttribute as CFString)
+
+            if let cmdChar, cmdChar.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "c" {
+                out.append(AXMenuCopyCandidate(
+                    element: el,
+                    candidate: MenuCopyCandidate(title: title, cmdChar: cmdChar, cmdModifiers: cmdModifiers, enabled: enabled)
+                ))
             }
 
-            if let found = findMenuItemByCmdChar(root: el, cmdChar: cmdChar) {
-                return found
-            }
+            collectMenuCopyCandidates(root: el, into: &out, limit: limit)
         }
-
-        return nil
     }
 
     private func readFocusedAXElement(from container: AXUIElement) -> AXUIElement? {
@@ -195,32 +213,18 @@ class AccessibilityManager {
         return unsafeBitCast(focusedObj, to: AXUIElement.self)
     }
 
-    private func postCopyChord(source: CGEventSource?, post: (CGEvent) -> Void) {
-        let cmdKey: CGKeyCode = 0x37 // left command
-        let cKey: CGKeyCode = 0x08 // 'C'
-
+    private func postModifiedKeyPress(source: CGEventSource?, virtualKey: CGKeyCode, flags: CGEventFlags, post: (CGEvent) -> Void) {
         guard
-            let cmdDown = CGEvent(keyboardEventSource: source, virtualKey: cmdKey, keyDown: true),
-            let cDown = CGEvent(keyboardEventSource: source, virtualKey: cKey, keyDown: true),
-            let cUp = CGEvent(keyboardEventSource: source, virtualKey: cKey, keyDown: false),
-            let cmdUp = CGEvent(keyboardEventSource: source, virtualKey: cmdKey, keyDown: false)
-        else {
-            return
-        }
+            let down = CGEvent(keyboardEventSource: source, virtualKey: virtualKey, keyDown: true),
+            let up = CGEvent(keyboardEventSource: source, virtualKey: virtualKey, keyDown: false)
+        else { return }
 
-        // Make modifier state explicit for apps that don't track it across events.
-        cmdDown.flags = .maskCommand
-        cDown.flags = .maskCommand
-        cUp.flags = .maskCommand
-        cmdUp.flags = .maskCommand
+        down.flags = flags
+        up.flags = flags
 
-        post(cmdDown)
+        post(down)
         usleep(5_000)
-        post(cDown)
-        usleep(5_000)
-        post(cUp)
-        usleep(5_000)
-        post(cmdUp)
+        post(up)
     }
     
     private func captureFromElementOrAncestors(_ element: AXUIElement, maxDepth: Int = 12) -> (element: AXUIElement, text: String, range: NSRange?)? {
@@ -414,6 +418,23 @@ class AccessibilityManager {
         let result = AXUIElementCopyAttributeValue(element, attribute, &value)
         guard result == .success else { return nil }
         return value as? String
+    }
+
+    private func readAXBool(_ element: AXUIElement, attribute: CFString) -> Bool? {
+        var value: AnyObject?
+        let result = AXUIElementCopyAttributeValue(element, attribute, &value)
+        guard result == .success, let value else { return nil }
+        if let b = value as? Bool { return b }
+        if let n = value as? NSNumber { return n.boolValue }
+        return nil
+    }
+
+    private func readAXInt(_ element: AXUIElement, attribute: CFString) -> Int? {
+        var value: AnyObject?
+        let result = AXUIElementCopyAttributeValue(element, attribute, &value)
+        guard result == .success, let value else { return nil }
+        if let n = value as? NSNumber { return n.intValue }
+        return nil
     }
 
     private func readAXRange(_ element: AXUIElement, attribute: CFString) -> NSRange? {
