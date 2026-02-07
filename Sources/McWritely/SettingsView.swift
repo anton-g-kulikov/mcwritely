@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @ObservedObject var settings = Settings.shared
+    @State private var hasAccessibilityAccess: Bool = AccessibilityManager.shared.checkPermissions()
     
     var body: some View {
         VStack(spacing: 0) {
@@ -37,8 +38,8 @@ struct SettingsView: View {
                     VStack(alignment: .leading, spacing: 10) {
                         PermissionRow(
                             title: "Accessibility Access",
-                            isGranted: AccessibilityManager.shared.checkPermissions(),
-                            onRequest: { _ = AccessibilityManager.shared.checkPermissions(prompt: true) }
+                            isGranted: hasAccessibilityAccess,
+                            onRequest: requestAccessibilityAccess
                         )
                         
 
@@ -56,6 +57,28 @@ struct SettingsView: View {
         }
         .frame(width: 420)
         .background(Color.white)
+        .onAppear { refreshPermissions() }
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+            // Returning from System Settings should refresh the trust state.
+            refreshPermissions()
+        }
+    }
+
+    private func refreshPermissions() {
+        hasAccessibilityAccess = AccessibilityManager.shared.checkPermissions()
+    }
+
+    private func requestAccessibilityAccess() {
+        // Best-effort: macOS may not show a prompt, but this doesn't hurt.
+        _ = AccessibilityManager.shared.checkPermissions(prompt: true)
+
+        // Always open the correct System Settings pane.
+        AccessibilityManager.shared.openAccessibilitySettings()
+
+        // Refresh a few times because trust updates can be delayed.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { refreshPermissions() }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { refreshPermissions() }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { refreshPermissions() }
     }
 }
 
