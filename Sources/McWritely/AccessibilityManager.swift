@@ -470,16 +470,20 @@ class AccessibilityManager {
                 hadSelectionAtPasteTime = await hasActiveSelectionByCopy(appPID: target.appPID, correctedText: correctedText)
             }
         }
+
+        // If we still can't confirm a selection, do NOT paste automatically; pasting will append at the caret
+        // and is more harmful than leaving corrected text on the clipboard.
+        if !hadSelectionAtPasteTime {
+            return ReplacementResult(
+                method: .paste,
+                state: .failed,
+                detail: "McWritely could not confirm an active selection in this app, so it did not paste automatically (to avoid duplicating text). The corrected text is on your clipboard; paste it manually if needed."
+            )
+        }
         
         // Give macOS a moment to restore focus to target app
         try? await Task.sleep(nanoseconds: 200_000_000)
         simulatePaste(appPID: target.appPID)
-        
-        // Retry paste once after re-activating, for apps that ignore the first Cmd+V
-        try? await Task.sleep(nanoseconds: 200_000_000)
-        if await ensureTargetAppFrontmost(target) {
-            simulatePaste(appPID: target.appPID)
-        }
 
         // Best-effort verification.
         try? await Task.sleep(nanoseconds: 250_000_000)
@@ -512,18 +516,13 @@ class AccessibilityManager {
     }
     
     private func simulatePaste(appPID: pid_t) {
+        // Paste must be executed at most once per Apply. Unlike Cmd+C, multiple delivery routes here
+        // cause visible duplication. Use a single route.
         let source = CGEventSource(stateID: .hidSystemState) ?? CGEventSource(stateID: .combinedSessionState)
         let vKey: CGKeyCode = 0x09 // 'V'
 
         postModifiedKeyPress(source: source, virtualKey: vKey, flags: .maskCommand) { ev in
             ev.postToPid(appPID)
-        }
-
-        postModifiedKeyPress(source: source, virtualKey: vKey, flags: .maskCommand) { ev in
-            ev.post(tap: .cghidEventTap)
-        }
-        postModifiedKeyPress(source: source, virtualKey: vKey, flags: .maskCommand) { ev in
-            ev.post(tap: .cgAnnotatedSessionEventTap)
         }
     }
 
