@@ -58,6 +58,7 @@
 - [x] **DOC-TASK-005: Update Documentation with Security Findings** - ✅ **COMPLETED** - Add security notes to README based on review
 - [x] **DOC-TASK-006: Add Shields.io badges (Swift, macOS, License) to README** - ✅ **COMPLETED** - Add "flare" to the top of README
 - [x] **DOC-TASK-007: Extract CONTRIBUTING.md and initialize CHANGELOG.md** - ✅ **COMPLETED** - Standardize project documentation
+- [x] **DOC-TASK-008: Create refactoring plan (reliability + clipboard + app compatibility)** - ✅ **COMPLETED** - Prioritized plan based on `project-review.md` findings
 
 ### RELEASE
 
