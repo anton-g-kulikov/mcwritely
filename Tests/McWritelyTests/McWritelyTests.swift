@@ -259,4 +259,36 @@ final class McWritelyTests: XCTestCase {
         let picked = MenuCopyCandidateSelector.chooseBest(from: candidates.map { (candidate: $0.0, index: $0.1) })
         XCTAssertEqual(picked?.1, 1)
     }
+
+    func testMenuPasteCandidateSelectorPrefersCmdV() throws {
+        let candidates: [(MenuCopyCandidate, Int)] = [
+            (MenuCopyCandidate(title: "Paste and Match Style", cmdChar: "v", cmdModifiers: 256 | 2048 | 512, enabled: true), 0), // Cmd+Opt+Shift+V
+            (MenuCopyCandidate(title: "Paste", cmdChar: "v", cmdModifiers: 256, enabled: true), 1), // Cmd+V
+            (MenuCopyCandidate(title: "Paste Special", cmdChar: "v", cmdModifiers: 256 | 512, enabled: true), 2) // Cmd+Shift+V
+        ]
+
+        let picked = MenuPasteCandidateSelector.chooseBest(from: candidates.map { (candidate: $0.0, index: $0.1) })
+        XCTAssertEqual(picked?.1, 1)
+    }
+
+    func testMenuPasteCandidateSelectorIgnoresDisabled() throws {
+        let candidates: [(MenuCopyCandidate, Int)] = [
+            (MenuCopyCandidate(title: "Paste", cmdChar: "v", cmdModifiers: 256, enabled: false), 0),
+            (MenuCopyCandidate(title: "Paste and Match Style", cmdChar: "v", cmdModifiers: 256 | 512, enabled: true), 1)
+        ]
+
+        let picked = MenuPasteCandidateSelector.chooseBest(from: candidates.map { (candidate: $0.0, index: $0.1) })
+        XCTAssertEqual(picked?.1, 1)
+    }
+
+    func testMenuPasteCandidateSelectorUsesTitleAsTieBreaker() throws {
+        let candidates: [(MenuCopyCandidate, Int)] = [
+            (MenuCopyCandidate(title: "Paste Something", cmdChar: "v", cmdModifiers: 256, enabled: true), 0),
+            (MenuCopyCandidate(title: "Paste", cmdChar: "v", cmdModifiers: 256, enabled: true), 1),
+            (MenuCopyCandidate(title: nil, cmdChar: "v", cmdModifiers: 256, enabled: true), 2)
+        ]
+
+        let picked = MenuPasteCandidateSelector.chooseBest(from: candidates.map { (candidate: $0.0, index: $0.1) })
+        XCTAssertEqual(picked?.1, 1)
+    }
 }
