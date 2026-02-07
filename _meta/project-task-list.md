@@ -5,7 +5,7 @@
 - [x] **CORE-TASK-008: Improve selection capture reliability in Electron/other apps** - ✅ **COMPLETED** - Frontmost app tracking + richer pasteboard extraction + clipboard capture retries
 - [x] **CORE-TASK-009: Always keep corrected text in clipboard after Apply** - ✅ **COMPLETED** - Removed clipboard-restore on Apply; corrected text remains available on failure
 - [x] **CORE-TASK-010: Verified replacement results + truthful UI behavior** - ✅ **COMPLETED** - “Apply” now returns verified/unverified/failed results; panel only auto-hides on verified success
-- [ ] **CORE-TASK-011: Add AX range/value replacement strategy before paste fallback** - 📋 **NOT STARTED** - Use `kAXSelectedTextRange` + `kAXValue` where available (Est: 3-6h)
+- [ ] **CORE-TASK-011: Add AX range/value replacement strategy before paste fallback** - 🟡 **IN PROGRESS** - Use `kAXSelectedTextRange` + `kAXValue` where available (Est: 3-6h)
 - [ ] **RELEASE-TASK-010: Release 2.0.0 (version bump + changelog + rebuilt app/DMG)** - 📋 **NOT STARTED** (Est: 1-2h)
 
 ## Completed Tasks

@@ -59,6 +59,18 @@
 - **Description**: Verify that replacement is not verified when neither selected text nor value indicate the corrected text was applied.
 - **Expected**: Verified = false.
 
+### CORE-TEST-016: Range Replacement Helper (Happy Path)
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify that a helper can replace a substring in a string given a valid `NSRange`.
+- **Expected**: Output string equals expected with range replaced.
+
+### CORE-TEST-017: Range Replacement Helper (Bounds Checks)
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify that invalid ranges (negative/out of bounds) are rejected safely.
+- **Expected**: Helper returns `nil` (or equivalent) without crashing.
+
 ### CORE-TEST-005: Selection Capture Validation
 
 - **Status**: 📋 NOT STARTED
