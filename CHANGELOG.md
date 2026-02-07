@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.10] - 2026-02-07
+### Fixed
+- Improved paste-fallback replacement and verification by detecting whether a selection is active (marker+Cmd+C), attempting a best-effort reselect when missing, and verifying inserted text via copy selection for apps like Notion/Electron where AX readback is unreliable.
+
 ## [2.0.9] - 2026-02-07
 ### Fixed
 - In Electron editors (Codex, VS Code), Apply now avoids stealing focus so the original selection is preserved and paste replaces the selection instead of appending at the caret.

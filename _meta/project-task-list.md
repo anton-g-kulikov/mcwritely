@@ -26,7 +26,7 @@
   - [x] Improve AX menu-copy fallback to reliably trigger Copy (avoid pressing wrong 'c' menu item): score candidates by cmdChar+modifiers+enabled, with title as tie-breaker (Est: 30-60m)
   - [x] Improve synthetic Cmd+C for Electron: post only `c` key with `.maskCommand`, and try `.cghidEventTap` as an extra fallback tap (Est: 15-30m)
   - [x] Fix Electron Apply appending (instead of replacing selection): show panel without activating McWritely so the target app keeps selection (Est: 30-60m)
-  - [ ] Prevent paste-fallback append in Electron: before Cmd+V, detect whether a selection is active (marker+Cmd+C). If selection is absent, attempt a safe reselect or show a clearer “could not replace selection” warning (Est: 1-2h)
+  - [x] Prevent paste-fallback append in Electron: before Cmd+V, detect whether a selection is active (marker+Cmd+C). If selection is absent, attempt a safe reselect (Shift+Left by captured length) and verify inserted text via copy selection when possible (Est: 1-2h)
   - [ ] Manual verification in Codex app + VS Code (Electron) (Est: 15-30m)
 
 ### UI
@@ -53,6 +53,10 @@
   - [x] Complete the Electron Apply (replace vs append) fix and update release notes
   - [x] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
   - [ ] Smoke-test in Codex + VS Code: capture and Apply replaces (not append)
+- [ ] **RELEASE-TASK-020: Release 2.0.10 (version bump + changelog + rebuilt app/DMG)** - 🟡 **IN PROGRESS** (Est: 30-60m)
+  - [ ] Smoke-test in Codex + VS Code: Apply replaces (not append)
+  - [ ] Smoke-test in Notion: successful Apply does not show red verification error
+  - [ ] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
 
 ### CONFIG
 
