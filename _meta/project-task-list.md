@@ -25,6 +25,7 @@
   - [x] Keep panel visible when app deactivates during capture (avoid "blink then close"): set `CorrectionPanel.hidesOnDeactivate = false` (Est: 15-30m)
   - [x] Improve AX menu-copy fallback to reliably trigger Copy (avoid pressing wrong 'c' menu item): score candidates by cmdChar+modifiers+enabled, with title as tie-breaker (Est: 30-60m)
   - [x] Improve synthetic Cmd+C for Electron: post only `c` key with `.maskCommand`, and try `.cghidEventTap` as an extra fallback tap (Est: 15-30m)
+  - [ ] Fix Electron Apply appending (instead of replacing selection): show panel without activating McWritely so the target app keeps selection (Est: 30-60m)
   - [ ] Manual verification in Codex app + VS Code (Electron) (Est: 15-30m)
 
 ### UI
@@ -46,10 +47,9 @@
 - [x] **RELEASE-TASK-015: Release 2.0.5 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
 - [x] **RELEASE-TASK-016: Release 2.0.6 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
 - [x] **RELEASE-TASK-017: Release 2.0.7 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
-- [ ] **RELEASE-TASK-018: Release 2.0.8 (version bump + changelog + rebuilt app/DMG)** - 🟡 **IN PROGRESS** (Est: 30-60m)
-  - [ ] Ensure `CORE-TASK-013` manual verification in Codex + VS Code is done
-  - [ ] Update `CHANGELOG.md` (reverse chronological) and version badge in `README.md`
-  - [ ] Bump `Info.plist` version to 2.0.8
+- [x] **RELEASE-TASK-018: Release 2.0.8 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
+- [ ] **RELEASE-TASK-019: Release 2.0.9 (version bump + changelog + rebuilt app/DMG)** - 🟡 **IN PROGRESS** (Est: 30-60m)
+  - [ ] Complete the Electron Apply (replace vs append) fix and update release notes if needed
   - [ ] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
 
 ### CONFIG

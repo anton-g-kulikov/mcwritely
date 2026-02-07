@@ -155,6 +155,16 @@
   - Observe whether McWritely panel remains visible (even if it shows an error).
 - **Expected**: Panel stays open until the user closes it or Apply succeeds.
 
+### CORE-TEST-032: Electron Apply Replaces Selection (Manual)
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify that Apply replaces the selected text in Electron editors (Codex, VS Code) rather than appending at the caret.
+- **Steps**:
+  - In Codex app: select a sentence, trigger `Cmd+Opt+Shift+G`, wait for improved text, click Apply.
+  - Confirm the original selection is replaced (not duplicated/appended).
+  - Repeat in VS Code (in an editor buffer).
+- **Expected**: Resulting text equals the corrected text (single copy), and the original text is not left behind.
+
 ### CORE-TEST-031: Menu Copy Candidate Scoring (Unit)
 
 - **Status**: ✅ COMPLETED
