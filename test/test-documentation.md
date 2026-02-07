@@ -155,6 +155,17 @@
   - Observe whether McWritely panel remains visible (even if it shows an error).
 - **Expected**: Panel stays open until the user closes it or Apply succeeds.
 
+### CORE-TEST-031: Menu Copy Candidate Scoring (Unit)
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify that menu Copy selection chooses the most likely Edit -> Copy menu item when multiple `cmdChar == "c"` items exist (Copy vs Copy Style / Copy Link / etc).
+- **Cases**:
+  - Prefer `Cmd+C` over `Cmd+Opt+C` and other modifier combos.
+  - Ignore disabled menu items.
+  - Use the menu item title only as a tie-breaker (prefer exact "Copy" when available).
+- **Expected**: The selector returns the best candidate deterministically for the provided inputs.
+- **Test File**: `Tests/McWritelyTests/McWritelyTests.swift:testMenuCopyCandidateSelectorPrefersCmdC` and related tests
+
 ### CORE-TEST-024: Text Normalization For Verification
 
 - **Status**: ✅ COMPLETED
