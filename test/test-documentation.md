@@ -185,6 +185,17 @@
   - Repeat with a longer selection (2-3 sentences).
 - **Expected**: No repeated/duplicated insertions from a single Apply.
 
+### CORE-TEST-035: Menu Paste Candidate Scoring (Unit)
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify that menu Paste selection chooses the most likely Edit -> Paste menu item when multiple items use cmdChar "v" (Paste vs Paste and Match Style / etc).
+- **Cases**:
+  - Prefer `Cmd+V` over `Cmd+Opt+Shift+V` and other modifier combos.
+  - Ignore disabled menu items.
+  - Use the menu item title only as a tie-breaker (prefer exact "Paste" when available).
+- **Expected**: The selector returns the best candidate deterministically for the provided inputs.
+- **Test File**: `Tests/McWritelyTests/McWritelyTests.swift:testMenuPasteCandidateSelectorPrefersCmdV` and related tests
+
 ### CORE-TEST-031: Menu Copy Candidate Scoring (Unit)
 
 - **Status**: ✅ COMPLETED
