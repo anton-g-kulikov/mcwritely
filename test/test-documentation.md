@@ -128,13 +128,14 @@
 
 ### CORE-TEST-024: Text Normalization For Verification
 
-- **Status**: 📋 NOT STARTED
+- **Status**: ✅ COMPLETED
 - **Description**: Verify that text normalization makes verification resilient to platform/editor formatting differences.
 - **Cases**:
   - NBSP (`\\u{00A0}`) vs regular spaces
   - CRLF vs LF
   - Multiple whitespace runs vs single spaces
 - **Expected**: Normalized strings compare equal when they are visually equivalent.
+- **Test File**: `Tests/McWritelyTests/McWritelyTests.swift:testNormalizeForVerificationNBSPAndNewlines` and `testNormalizeForVerificationWhitespaceRuns`
 
 ### CORE-TEST-025: Notion Paste Verification Fallback (Manual)
 

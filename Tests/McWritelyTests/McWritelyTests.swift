@@ -205,4 +205,26 @@ final class McWritelyTests: XCTestCase {
         )
         XCTAssertNil(resolved)
     }
+
+    func testNormalizeForVerificationNBSPAndNewlines() throws {
+        let s1 = "Hello\u{00A0}world\r\nNext"
+        let s2 = "Hello world\nNext"
+        XCTAssertEqual(TextNormalizer.normalizeForVerification(s1), TextNormalizer.normalizeForVerification(s2))
+    }
+
+    func testNormalizeForVerificationWhitespaceRuns() throws {
+        let s1 = "Hello   world\t\t!"
+        let s2 = "Hello world !"
+        XCTAssertEqual(TextNormalizer.normalizeForVerification(s1), TextNormalizer.normalizeForVerification(s2))
+    }
+
+    func testReplacementVerificationUsesNormalization() throws {
+        // Notion/Electron often normalize whitespace; verification should treat these as equivalent.
+        let ok = ReplacementVerifier.isVerified(
+            selectedText: "Hello\u{00A0}world",
+            value: nil,
+            correctedText: "Hello world"
+        )
+        XCTAssertTrue(ok)
+    }
 }
