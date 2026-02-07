@@ -2,14 +2,22 @@
 
 ## Current Tasks
 
-- [x] **UI-TASK-006: Remove auto-capture on open; Open McWritely shows empty panel** - ✅ **COMPLETED** - Prevents error flash; adds explicit reset; ignores stale capture results
-- [x] **UI-TASK-007: Reset-before-show + prevent stale tasks from leaving spinner on** - ✅ **COMPLETED**
-- [x] **RELEASE-TASK-011: Release 2.0.1 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
+### Product / Core
+
 - [x] **CORE-TASK-008: Improve selection capture reliability in Electron/other apps** - ✅ **COMPLETED** - Frontmost app tracking + richer pasteboard extraction + clipboard capture retries
 - [x] **CORE-TASK-009: Always keep corrected text in clipboard after Apply** - ✅ **COMPLETED** - Removed clipboard-restore on Apply; corrected text remains available on failure
 - [x] **CORE-TASK-010: Verified replacement results + truthful UI behavior** - ✅ **COMPLETED** - “Apply” now returns verified/unverified/failed results; panel only auto-hides on verified success
 - [x] **CORE-TASK-011: Add AX range/value replacement strategy before paste fallback** - ✅ **COMPLETED** - Uses `kAXSelectedTextRange` + `kAXValue` where available before falling back
+
+### UI
+
+- [x] **UI-TASK-006: Remove auto-capture on open; Open McWritely shows empty panel** - ✅ **COMPLETED** - Prevents error flash; adds explicit reset; ignores stale capture results
+- [x] **UI-TASK-007: Reset-before-show + prevent stale tasks from leaving spinner on** - ✅ **COMPLETED**
+
+### RELEASE
+
 - [x] **RELEASE-TASK-010: Release 2.0.0 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
+- [x] **RELEASE-TASK-011: Release 2.0.1 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
 
 ## Completed Tasks
 
