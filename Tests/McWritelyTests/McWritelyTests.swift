@@ -165,4 +165,44 @@ final class McWritelyTests: XCTestCase {
         XCTAssertNil(StringRangeReplacer.replacing(in: "Hi", range: NSRange(location: 0, length: 9), with: "x"))
         XCTAssertNil(StringRangeReplacer.replacing(in: "Hi", range: NSRange(location: -1, length: 1), with: "x"))
     }
+
+    func testSelectionTextResolverPrefersSelectedText() throws {
+        let resolved = SelectionTextResolver.resolve(
+            selectedText: "  direct  ",
+            stringForRange: "range",
+            value: "Hello world",
+            selectedRange: NSRange(location: 6, length: 5)
+        )
+        XCTAssertEqual(resolved, "direct")
+    }
+
+    func testSelectionTextResolverFallsBackToStringForRange() throws {
+        let resolved = SelectionTextResolver.resolve(
+            selectedText: "   ",
+            stringForRange: "  from range  ",
+            value: "Hello world",
+            selectedRange: NSRange(location: 6, length: 5)
+        )
+        XCTAssertEqual(resolved, "from range")
+    }
+
+    func testSelectionTextResolverFallsBackToValueAndRange() throws {
+        let resolved = SelectionTextResolver.resolve(
+            selectedText: nil,
+            stringForRange: nil,
+            value: "Hello world",
+            selectedRange: NSRange(location: 6, length: 5)
+        )
+        XCTAssertEqual(resolved, "world")
+    }
+
+    func testSelectionTextResolverReturnsNilWhenNothingUsable() throws {
+        let resolved = SelectionTextResolver.resolve(
+            selectedText: "   ",
+            stringForRange: "\n",
+            value: "Hi",
+            selectedRange: NSRange(location: 0, length: 9)
+        )
+        XCTAssertNil(resolved)
+    }
 }

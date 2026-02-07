@@ -89,6 +89,28 @@
 - **Description**: Verify that invalid ranges are rejected safely.
 - **Expected**: Helper returns `nil` (or equivalent) without crashing.
 
+### CORE-TEST-021: Selection Text Resolution Precedence
+
+- **Status**: ✅ COMPLETED
+- **Description**: Verify that selection-capture logic chooses the best available text representation deterministically.
+- **Inputs**:
+  - `selectedText` present vs empty
+  - `stringForRange`/`attributedStringForRange` present vs empty
+  - `value` + `selectedTextRange` present vs missing/out-of-bounds
+- **Expected**:
+  - Prefer non-empty `selectedText` when available.
+  - Else prefer non-empty `stringForRange`/`attributedStringForRange` output when available.
+  - Else fall back to `substring(value, selectedTextRange)` when valid.
+  - Else return `nil`.
+- **Test File**: `Tests/McWritelyTests/McWritelyTests.swift:testSelectionTextResolverPrefersSelectedText` and related resolver tests
+
+### CORE-TEST-022: Selection Text Resolution Handles Trimming
+
+- **Status**: ✅ COMPLETED
+- **Description**: Verify that resolved selection text is trimmed and empty results are treated as absent.
+- **Expected**: Whitespace-only candidates should be ignored and the resolver should proceed to the next candidate.
+- **Test File**: `Tests/McWritelyTests/McWritelyTests.swift:testSelectionTextResolverFallsBackToStringForRange` and `testSelectionTextResolverReturnsNilWhenNothingUsable`
+
 ### CORE-TEST-005: Selection Capture Validation
 
 - **Status**: 📋 NOT STARTED

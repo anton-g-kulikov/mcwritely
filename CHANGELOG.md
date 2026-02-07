@@ -25,7 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.2] - 2026-02-07
 ### Fixed
-- Improved selection capture in Electron-based apps (Codex, VS Code) by adding an AX `value`+`selectedTextRange` capture path and a more deterministic clipboard copy fallback.
+- Improved selection capture in Electron-based apps (Codex, VS Code) by:
+  - walking up the focused accessibility element parent chain to find a better text container
+  - using AX parameterized `stringForRange` / `attributedStringForRange` when `selectedTextRange` is available
+  - sending a full Cmd+C key chord directly to the target PID during clipboard fallback (reduces ignored copy events)
 
 ## [1.4.3] - 2026-02-05
 ### Changed

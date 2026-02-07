@@ -9,6 +9,12 @@
 - [x] **CORE-TASK-010: Verified replacement results + truthful UI behavior** - ✅ **COMPLETED** - “Apply” now returns verified/unverified/failed results; panel only auto-hides on verified success
 - [x] **CORE-TASK-011: Add AX range/value replacement strategy before paste fallback** - ✅ **COMPLETED** - Uses `kAXSelectedTextRange` + `kAXValue` where available before falling back
 - [x] **CORE-TASK-012: Capture selection reliably in Codex app + VS Code** - ✅ **COMPLETED** - Added AX value+range capture, deterministic clipboard marker copy fallback, and AX menu-copy fallback
+- [ ] **CORE-TASK-013: Fix remaining selection capture failures in Electron editors (Codex, VS Code)** - 🟡 **IN PROGRESS** (Est: 2-4h)
+  - [x] Add AX “walk up the focused element’s parent chain” to find a better text element
+  - [x] Add `kAXStringForRangeParameterizedAttribute`/`kAXAttributedStringForRangeParameterizedAttribute` capture path when `selectedTextRange` is available
+  - [x] Improve Cmd+C injection by posting a full key chord directly to the target PID (fallback to session tap)
+  - [x] Add unit tests for selection text resolution precedence (pure logic) and update test docs
+  - [ ] Manual verification in Codex app + VS Code (Electron) (Est: 15-30m)
 
 ### UI
 
@@ -20,6 +26,9 @@
 - [x] **RELEASE-TASK-010: Release 2.0.0 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
 - [x] **RELEASE-TASK-011: Release 2.0.1 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
 - [ ] **RELEASE-TASK-012: Release 2.0.2 (version bump + changelog + rebuilt app/DMG)** - 🟡 **IN PROGRESS** (Est: 1-2h)
+  - [ ] Complete `CORE-TASK-013` and update release notes if needed
+  - [ ] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
+  - [ ] Smoke-test selection capture in Codex + VS Code + Notion
 
 ### CONFIG
 
