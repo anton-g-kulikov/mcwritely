@@ -157,7 +157,7 @@
 
 ### CORE-TEST-031: Menu Copy Candidate Scoring (Unit)
 
-- **Status**: 📋 NOT STARTED
+- **Status**: ✅ COMPLETED
 - **Description**: Verify that menu Copy selection chooses the most likely Edit -> Copy menu item when multiple `cmdChar == "c"` items exist (Copy vs Copy Style / Copy Link / etc).
 - **Cases**:
   - Prefer `Cmd+C` over `Cmd+Opt+C` and other modifier combos.
