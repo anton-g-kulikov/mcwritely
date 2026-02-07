@@ -187,7 +187,7 @@
 
 ### CORE-TEST-035: Menu Paste Candidate Scoring (Unit)
 
-- **Status**: 📋 NOT STARTED
+- **Status**: ✅ COMPLETED
 - **Description**: Verify that menu Paste selection chooses the most likely Edit -> Paste menu item when multiple items use cmdChar "v" (Paste vs Paste and Match Style / etc).
 - **Cases**:
   - Prefer `Cmd+V` over `Cmd+Opt+Shift+V` and other modifier combos.
