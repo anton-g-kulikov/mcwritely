@@ -380,6 +380,16 @@ class AccessibilityManager {
             return ReplacementResult(method: .paste, state: .verified, detail: nil)
         }
 
+        // Some apps (Notion/webviews) replace the underlying accessibility element during paste,
+        // making the original element unreadable even though paste succeeded.
+        // Try to re-capture the (still selected) text and verify against that.
+        if let app = NSRunningApplication(processIdentifier: target.appPID) {
+            if let recaptured = await captureSelectedText(preferredApp: app),
+               ReplacementVerifier.isVerified(selectedText: recaptured.selectedText, value: nil, correctedText: correctedText) {
+                return ReplacementResult(method: .paste, state: .verified, detail: nil)
+            }
+        }
+
         return ReplacementResult(
             method: .paste,
             state: .unverified,
