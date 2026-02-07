@@ -3,7 +3,7 @@
 ![Swift 5.9](https://img.shields.io/badge/Swift-5.9-orange.svg)
 ![macOS 14.0+](https://img.shields.io/badge/platform-macOS%2014.0%2B-blue.svg)
 ![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)
-![Version](https://img.shields.io/badge/version-2.0.0-green.svg)
+![Version](https://img.shields.io/badge/version-2.0.1-green.svg)
 
 McWritely is a lightweight macOS utility that provides AI-powered writing assistance in any application. It captures your selected text, refines it using OpenAI, and lets you replace the original text with a much better version instantly.
 

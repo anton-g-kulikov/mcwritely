@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Corrected text is always kept on the clipboard after Apply.
 
+## [2.0.1] - 2026-02-07
+### Fixed
+- Opening McWritely from the menu bar no longer triggers an automatic capture attempt (prevents brief "No text selected" flash).
+- Reduced stale async state updates while capturing selection.
+
 ## [1.4.3] - 2026-02-05
 ### Changed
 - Rebuilt installation package with latest robust text replacement logic.
