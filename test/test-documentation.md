@@ -126,6 +126,17 @@
   - In VS Code: select a short snippet in the editor, trigger `Cmd+Opt+Shift+G`, ensure McWritely shows the selection.
 - **Expected**: McWritely’s panel populates with the selected text (no “No text selected” error).
 
+### CORE-TEST-028: Hotkey Capture Failure Shows Error (Manual)
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify that if capture fails, the hotkey still triggers a capture attempt and shows an actionable error (not a silent empty panel).
+- **Steps**:
+  - Trigger McWritely hotkey in an app with no selection.
+  - Confirm McWritely shows a spinner briefly and then shows a red error message.
+  - Trigger McWritely hotkey in Codex/VS Code with a selection.
+  - If it fails, confirm it shows a red error message (including the app name) rather than staying silently empty.
+- **Expected**: No silent empty state after hotkey; failures are visible and actionable.
+
 ### CORE-TEST-024: Text Normalization For Verification
 
 - **Status**: ✅ COMPLETED
