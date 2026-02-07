@@ -137,6 +137,15 @@
   - If it fails, confirm it shows a red error message (including the app name) rather than staying silently empty.
 - **Expected**: No silent empty state after hotkey; failures are visible and actionable.
 
+### CORE-TEST-029: Capture Before Panel Preserves Electron Selection (Manual)
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify that selection capture happens before McWritely activates and shows its panel, preserving selection in Electron apps.
+- **Steps**:
+  - In VS Code: select text, trigger McWritely hotkey; confirm the selection remains in VS Code during capture and McWritely shows the captured text.
+  - In Codex: select text, trigger McWritely hotkey; confirm the selection remains and McWritely shows the captured text.
+- **Expected**: No “focus hop” that clears selection prior to capture; captured text appears in McWritely.
+
 ### CORE-TEST-024: Text Normalization For Verification
 
 - **Status**: ✅ COMPLETED
