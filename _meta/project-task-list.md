@@ -27,8 +27,8 @@
 - [x] **UI-TASK-006: Remove auto-capture on open; Open McWritely shows empty panel** - ✅ **COMPLETED** - Prevents error flash; adds explicit reset; ignores stale capture results
 - [x] **UI-TASK-007: Reset-before-show + prevent stale tasks from leaving spinner on** - ✅ **COMPLETED**
 - [ ] **UI-TASK-008: Permissions UI should reflect granted Accessibility access** - 🟡 **IN PROGRESS** (Est: 30-60m)
-  - [ ] Re-check `AXIsProcessTrusted` on Settings open and when app becomes active
-  - [ ] Make "Request Access" open the Accessibility settings pane and refresh status
+  - [x] Re-check `AXIsProcessTrusted` on Settings open and when app becomes active
+  - [x] Make "Request Access" open the Accessibility settings pane and refresh status
   - [ ] Manual validation: after granting permission, Settings shows checkmark without restart when possible
 
 ### RELEASE
