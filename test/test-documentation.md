@@ -79,13 +79,13 @@
 
 ### CORE-TEST-019: Extract Substring From NSRange (Happy Path)
 
-- **Status**: 📋 NOT STARTED
+- **Status**: ✅ COMPLETED
 - **Description**: Verify that selected text can be extracted from a full value string using a valid `NSRange`.
 - **Expected**: Extracted substring equals expected.
 
 ### CORE-TEST-020: Extract Substring From NSRange (Invalid Range)
 
-- **Status**: 📋 NOT STARTED
+- **Status**: ✅ COMPLETED
 - **Description**: Verify that invalid ranges are rejected safely.
 - **Expected**: Helper returns `nil` (or equivalent) without crashing.
 

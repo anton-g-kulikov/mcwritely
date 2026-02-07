@@ -96,6 +96,20 @@ class AccessibilityManager {
                 selectedTextRange: range
             )
         }
+
+        // Some apps don't expose kAXSelectedText but do expose kAXValue + selection range.
+        if let value = readAXString(axElement, attribute: kAXValueAttribute as CFString),
+           let range = readAXRange(axElement, attribute: kAXSelectedTextRangeAttribute as CFString),
+           let extracted = StringRangeExtractor.substring(in: value, range: range) {
+            return CaptureTarget(
+                element: axElement,
+                appName: finalApp.localizedName ?? "Active App",
+                appPID: finalApp.processIdentifier,
+                bundleIdentifier: finalApp.bundleIdentifier,
+                selectedText: extracted,
+                selectedTextRange: range
+            )
+        }
         
         // Fallback: Simulate Cmd+C
         // We MUST ensure the target app stays frontmost for Cmd+C to work
@@ -103,28 +117,39 @@ class AccessibilityManager {
         
         let pasteboard = NSPasteboard.general
         let originalItems = snapshotPasteboardItems(pasteboard)
-        let originalChangeCount = pasteboard.changeCount
         _ = await ensureAppIsFrontmost(finalApp)
+        let marker = "MCWR_COPY_MARKER_\(UUID().uuidString)"
+        pasteboard.clearContents()
+        pasteboard.setString(marker, forType: .string)
+        let markerChangeCount = pasteboard.changeCount
+
         simulateCopy()
 
         defer { restorePasteboardItems(pasteboard, items: originalItems) }
 
         // Wait for the pasteboard to actually change. Electron-style apps can be slower under load.
-        let maxAttempts = 8
-        for _ in 0..<maxAttempts {
+        let maxAttempts = 10
+        for attempt in 0..<maxAttempts {
             try? await Task.sleep(nanoseconds: 120_000_000)
-            if pasteboard.changeCount == originalChangeCount {
-                continue
-            }
-            if let text = PasteboardTextExtractor.plainText(from: pasteboard) {
+
+            // If copy never happened, pasteboard may remain our marker.
+            let plain = PasteboardTextExtractor.plainText(from: pasteboard)
+            let changed = pasteboard.changeCount != markerChangeCount
+            if changed, let plain, plain != marker {
                 return CaptureTarget(
                     element: axElement,
                     appName: finalApp.localizedName ?? "Active App",
                     appPID: finalApp.processIdentifier,
                     bundleIdentifier: finalApp.bundleIdentifier,
-                    selectedText: text,
+                    selectedText: plain,
                     selectedTextRange: readAXRange(axElement, attribute: kAXSelectedTextRangeAttribute as CFString)
                 )
+            }
+
+            // Midway, try an accessibility menu-based Copy as a fallback (helps when CGEvent is ignored).
+            if attempt == 4 {
+                _ = await ensureAppIsFrontmost(finalApp)
+                performMenuCopy(appPID: finalApp.processIdentifier)
             }
         }
         
@@ -141,6 +166,46 @@ class AccessibilityManager {
         
         cmdDown?.post(tap: .cgAnnotatedSessionEventTap)
         cmdUp?.post(tap: .cgAnnotatedSessionEventTap)
+    }
+
+    private func performMenuCopy(appPID: pid_t) {
+        let app = AXUIElementCreateApplication(appPID)
+        var menubarObj: AnyObject?
+        let res = AXUIElementCopyAttributeValue(app, kAXMenuBarAttribute as CFString, &menubarObj)
+        guard res == .success, let menubarObj else { return }
+        let ref = menubarObj as CFTypeRef
+        guard CFGetTypeID(ref) == AXUIElementGetTypeID() else { return }
+        let menubar = unsafeBitCast(menubarObj, to: AXUIElement.self)
+
+        // Find a menu item with cmdChar == "c" (avoids localization issues).
+        if let copyItem = findMenuItemByCmdChar(root: menubar, cmdChar: "c") {
+            _ = AXUIElementPerformAction(copyItem, kAXPressAction as CFString)
+        }
+    }
+
+    private func findMenuItemByCmdChar(root: AXUIElement, cmdChar: String) -> AXUIElement? {
+        var childrenObj: AnyObject?
+        let res = AXUIElementCopyAttributeValue(root, kAXChildrenAttribute as CFString, &childrenObj)
+        guard res == .success, let children = childrenObj as? [AnyObject] else { return nil }
+
+        for child in children {
+            let childRef = child as CFTypeRef
+            if CFGetTypeID(childRef) != AXUIElementGetTypeID() { continue }
+            let el = unsafeBitCast(child, to: AXUIElement.self)
+
+            var cmdObj: AnyObject?
+            if AXUIElementCopyAttributeValue(el, kAXMenuItemCmdCharAttribute as CFString, &cmdObj) == .success,
+               let s = cmdObj as? String,
+               s.lowercased() == cmdChar.lowercased() {
+                return el
+            }
+
+            if let found = findMenuItemByCmdChar(root: el, cmdChar: cmdChar) {
+                return found
+            }
+        }
+
+        return nil
     }
     
     @MainActor

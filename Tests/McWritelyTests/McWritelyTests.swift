@@ -121,6 +121,17 @@ final class McWritelyTests: XCTestCase {
         XCTAssertEqual(extracted, "Hello from coercion")
     }
 
+    func testExtractSubstringFromRangeHappyPath() throws {
+        let value = "Hello world"
+        let extracted = StringRangeExtractor.substring(in: value, range: NSRange(location: 6, length: 5))
+        XCTAssertEqual(extracted, "world")
+    }
+
+    func testExtractSubstringFromRangeInvalidRange() throws {
+        XCTAssertNil(StringRangeExtractor.substring(in: "Hi", range: NSRange(location: 0, length: 9)))
+        XCTAssertNil(StringRangeExtractor.substring(in: "Hi", range: NSRange(location: -1, length: 1)))
+    }
+
     func testReplacementVerificationSelectedTextMatch() throws {
         let ok = ReplacementVerifier.isVerified(
             selectedText: "  Hello  ",
