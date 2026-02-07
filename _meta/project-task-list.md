@@ -10,6 +10,7 @@
 ## Completed Tasks
 
 ### CORE
+
 - [x] **CORE-TASK-001: Initial project architecture and structure** - ✅ **COMPLETED** - Initial setup of the McWritely Swift project
 - [x] **CORE-TASK-002: Implement accessibility-based selection capture and replacement** - ✅ **COMPLETED** - Core logic for interacting with other applications
 - [x] **CORE-TASK-003: Implement asynchronous capture/replacement and clipboard safety** - ✅ **COMPLETED** - Improving reliability and user experience
@@ -20,30 +21,36 @@
 - [x] **UI-TASK-005: Fix Input Monitoring Request Access button** - ✅ **COMPLETED** - Button now opens System Preferences to Input Monitoring pane
 
 ### API
+
 - [x] **API-TASK-001: Integrate OpenAI GPT-4o-mini for writing assistance** - ✅ **COMPLETED** - Backend service for text refinement
 - [x] **API-TASK-002: Refactor OpenAIService to use Codable** - ✅ **COMPLETED** - Replace JSONSerialization with native Swift Codable structs
 - [x] **API-TASK-003: Implement idiomatic OpenAIError enum** - ✅ **COMPLETED** - Replace generic NSError with strongly typed OpenAIError
 
 ### UI
+
 - [x] **UI-TASK-001: Implement Settings UI for API keys and permissions** - ✅ **COMPLETED** - User-facing configuration interface
 - [x] **UI-TASK-002: Refine UI aesthetics (window shadows, alignment)** - ✅ **COMPLETED** - Polishing the application interface
 - [x] **UI-TASK-003: Generate and implement new "McWritely" app icon** - ✅ **COMPLETED** - Created a pencil with a mustache icon and updated the app bundle.
 - [x] **UI-TASK-004: Add version info to Settings screen** - ✅ **COMPLETED** - Display current app version at the bottom of Settings view.
 
 ### AUTH
+
 - [x] **AUTH-TASK-001: Implement secure API key storage using macOS Keychain** - ✅ **COMPLETED** - Secure storage for user credentials
 
 ### UTIL
+
 - [x] **UTIL-TASK-001: Add clipboard retention toggle for user control** - ✅ **COMPLETED** - New feature for clipboard management
 - [x] **UTIL-TASK-002: Remove failing GitHub workflow and clean up stray files** - ✅ **COMPLETED** - Remove `.github/workflows/build.yml` and `package-lock.json`.
 
 ### CONFIG
+
 - [x] **CONFIG-TASK-001: Develop build and DMG packaging scripts** - ✅ **COMPLETED** - Automation for building and distribution
 - [x] **CONFIG-TASK-002: Rename project from Writely to McWritely** - ✅ **COMPLETED** - Updated all project assets, documentation, and source code.
 - [x] **CONFIG-TASK-003: Implement GitHub Actions for build verification** - ✅ **COMPLETED** - Add CI workflow for automated builds
 - [x] **CONFIG-TASK-004: Make Keychain Service identifier generic** - ✅ **COMPLETED** - Refactor `Settings.swift` to avoid hardcoded domain
 
 ### DOC
+
 - [x] **DOC-TASK-001: Document setup, usage, and customization in README** - ✅ **COMPLETED** - Comprehensive user and developer documentation
 - [x] **DOC-TASK-002: Update test documentation and define test cases** - ✅ **COMPLETED** - Aligned test documentation with Swift/XCTest and documented current/planned tests
 - [x] **DOC-TASK-003: Add CC BY-NC 4.0 license information to README** - ✅ **COMPLETED** - Added license link and terms as requested
@@ -53,6 +60,7 @@
 - [x] **DOC-TASK-007: Extract CONTRIBUTING.md and initialize CHANGELOG.md** - ✅ **COMPLETED** - Standardize project documentation
 
 ### RELEASE
+
 - [x] **RELEASE-TASK-001: Bump version to 1.2 and commit changes** - ✅ **COMPLETED** - Bump version in Info.plist and create granular commits
 - [x] **RELEASE-TASK-002: Tag v1.2 and establish release process** - ✅ **COMPLETED** - Create git tag and define release workflow
 - [x] **RELEASE-TASK-003: Bump version to 1.3.1 and rebuild DMG** - ✅ **COMPLETED** - Update Info.plist and CHANGELOG.md, then package the application.
