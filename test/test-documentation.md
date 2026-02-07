@@ -77,6 +77,18 @@
 - **Description**: Verify that resetting the correction view model clears user-visible state (texts, error, target, processing flag).
 - **Expected**: All fields are reset to defaults without crashing.
 
+### CORE-TEST-019: Extract Substring From NSRange (Happy Path)
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify that selected text can be extracted from a full value string using a valid `NSRange`.
+- **Expected**: Extracted substring equals expected.
+
+### CORE-TEST-020: Extract Substring From NSRange (Invalid Range)
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify that invalid ranges are rejected safely.
+- **Expected**: Helper returns `nil` (or equivalent) without crashing.
+
 ### CORE-TEST-005: Selection Capture Validation
 
 - **Status**: 📋 NOT STARTED

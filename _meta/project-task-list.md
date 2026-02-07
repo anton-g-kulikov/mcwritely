@@ -8,6 +8,7 @@
 - [x] **CORE-TASK-009: Always keep corrected text in clipboard after Apply** - ✅ **COMPLETED** - Removed clipboard-restore on Apply; corrected text remains available on failure
 - [x] **CORE-TASK-010: Verified replacement results + truthful UI behavior** - ✅ **COMPLETED** - “Apply” now returns verified/unverified/failed results; panel only auto-hides on verified success
 - [x] **CORE-TASK-011: Add AX range/value replacement strategy before paste fallback** - ✅ **COMPLETED** - Uses `kAXSelectedTextRange` + `kAXValue` where available before falling back
+- [ ] **CORE-TASK-012: Capture selection reliably in Codex app + VS Code** - 🟡 **IN PROGRESS** - Add AX value+range capture, deterministic clipboard marker copy fallback, and AX menu-copy fallback (Est: 3-6h)
 
 ### UI
 
@@ -18,6 +19,7 @@
 
 - [x] **RELEASE-TASK-010: Release 2.0.0 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
 - [x] **RELEASE-TASK-011: Release 2.0.1 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
+- [ ] **RELEASE-TASK-012: Release 2.0.2 (version bump + changelog + rebuilt app/DMG)** - 📋 **NOT STARTED** (Est: 1-2h)
 
 ### CONFIG
 
