@@ -23,6 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Opening McWritely from the menu bar no longer triggers an automatic capture attempt (prevents brief "No text selected" flash).
 - Reduced stale async state updates while capturing selection.
 
+## [2.0.2] - 2026-02-07
+### Fixed
+- Improved selection capture in Electron-based apps (Codex, VS Code) by adding an AX `value`+`selectedTextRange` capture path and a more deterministic clipboard copy fallback.
+
 ## [1.4.3] - 2026-02-05
 ### Changed
 - Rebuilt installation package with latest robust text replacement logic.
