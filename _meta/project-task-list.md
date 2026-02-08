@@ -12,9 +12,9 @@
 - [ ] **CORE-TASK-015: Reduce false error states after Apply (Notion + Electron) and eliminate post-Apply selection animation** - 🟡 **IN PROGRESS** (Est: 1-2h)
   - [x] Ensure “unverified but likely applied” does not show a red error state (panel should close; clipboard has corrected text) (Est: 15-30m)
   - [x] Remove intrusive post-Apply verification that selects text via Shift+Left (avoid visible selection animation) (Est: 15-30m)
-  - [ ] Special-case Notion AX writes: if AX write reports success but verification is unreliable, treat as applied (Est: 15-30m)
+  - [x] Special-case Notion AX writes: no longer necessary after closing the panel on unverified Apply (Est: 15-30m)
   - [x] Strengthen clipboard final-state: after Apply returns, corrected text remains on clipboard (Est: 15-30m)
-  - [ ] Add/Update tests + test documentation (Est: 15-30m)
+  - [x] Add/Update tests + test documentation (Est: 15-30m)
   - [ ] Manual verification in Notion + Codex + VS Code (Est: 10-20m)
 - [ ] **CORE-TASK-014: Reduce false "unverified paste" in Notion by improving verification** - 🟡 **IN PROGRESS** (Est: 1-2h)
   - [x] Add text normalization for verification comparisons (NBSP, CRLF, whitespace runs)
@@ -57,15 +57,14 @@
 - [x] **RELEASE-TASK-016: Release 2.0.6 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
 - [x] **RELEASE-TASK-017: Release 2.0.7 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
 - [x] **RELEASE-TASK-018: Release 2.0.8 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
-- [ ] **RELEASE-TASK-019: Release 2.0.9 (version bump + changelog + rebuilt app/DMG)** - 🟡 **IN PROGRESS** (Est: 30-60m)
-  - [x] Complete the Electron Apply (replace vs append) fix and update release notes
-  - [x] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
-  - [ ] Smoke-test in Codex + VS Code: capture and Apply replaces (not append)
-- [ ] **RELEASE-TASK-020: Release 2.0.10 (version bump + changelog + rebuilt app/DMG)** - 🟡 **IN PROGRESS** (Est: 30-60m)
-  - [ ] Smoke-test in Codex + VS Code: Apply replaces (not append)
+- [x] **RELEASE-TASK-019: Release 2.0.9 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
+- [x] **RELEASE-TASK-020: Release 2.0.10 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
+- [x] **RELEASE-TASK-021: Release 2.0.11 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
+- [x] **RELEASE-TASK-022: Release 2.0.12 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
+- [ ] **RELEASE-TASK-023: Release 2.0.13 (version bump + changelog + rebuilt app/DMG)** - 🟡 **IN PROGRESS** (Est: 30-60m)
+  - [ ] Smoke-test in Codex + VS Code: no post-Apply selection animation; clipboard ends as corrected text
   - [ ] Smoke-test in Notion: successful Apply does not show red verification error
   - [ ] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
-  - [ ] Fix paste duplication regression (if present)
 
 ### CONFIG
 
