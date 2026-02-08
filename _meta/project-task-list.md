@@ -9,19 +9,19 @@
 - [x] **CORE-TASK-010: Verified replacement results + truthful UI behavior** - ✅ **COMPLETED** - “Apply” now returns verified/unverified/failed results; panel only auto-hides on verified success
 - [x] **CORE-TASK-011: Add AX range/value replacement strategy before paste fallback** - ✅ **COMPLETED** - Uses `kAXSelectedTextRange` + `kAXValue` where available before falling back
 - [x] **CORE-TASK-012: Capture selection reliably in Codex app + VS Code** - ✅ **COMPLETED** - Added AX value+range capture, deterministic clipboard marker copy fallback, and AX menu-copy fallback
-- [ ] **CORE-TASK-015: Reduce false error states after Apply (Notion + Electron) and eliminate post-Apply selection animation** - 🟡 **IN PROGRESS** (Est: 1-2h)
+- [x] **CORE-TASK-015: Reduce false error states after Apply (Notion + Electron) and eliminate post-Apply selection animation** - ✅ **COMPLETED** - Close panel on unverified Apply, avoid intrusive verification, normalize clipboard reassert (Manual verified 2026-02-08)
   - [x] Ensure “unverified but likely applied” does not show a red error state (panel should close; clipboard has corrected text) (Est: 15-30m)
   - [x] Remove intrusive post-Apply verification that selects text via Shift+Left (avoid visible selection animation) (Est: 15-30m)
   - [x] Special-case Notion AX writes: no longer necessary after closing the panel on unverified Apply (Est: 15-30m)
   - [x] Strengthen clipboard final-state: after Apply returns, corrected text remains on clipboard (Est: 15-30m)
   - [x] Add/Update tests + test documentation (Est: 15-30m)
-  - [ ] Manual verification in Notion + Codex + VS Code (Est: 10-20m)
-- [ ] **CORE-TASK-014: Reduce false "unverified paste" in Notion by improving verification** - 🟡 **IN PROGRESS** (Est: 1-2h)
+  - [x] Manual verification in Notion + Codex + VS Code (Est: 10-20m)
+- [x] **CORE-TASK-014: Reduce false "unverified paste" in Notion by improving verification** - ✅ **COMPLETED** - Addressed via normalization + close-on-unverified Apply (Manual verified 2026-02-08)
   - [x] Add text normalization for verification comparisons (NBSP, CRLF, whitespace runs)
   - [x] After paste fallback, attempt verification by re-capturing selection from the target app (uses existing capture pipeline)
   - [x] Add/Update tests + test documentation
-  - [ ] Verify manual behavior in Notion (Est: 5-10m)
-- [ ] **CORE-TASK-013: Fix remaining selection capture failures in Electron editors (Codex, VS Code)** - 🟡 **IN PROGRESS** (Est: 2-4h)
+  - [x] Verify manual behavior in Notion (Est: 5-10m)
+- [x] **CORE-TASK-013: Fix remaining selection capture failures in Electron editors (Codex, VS Code)** - ✅ **COMPLETED** - Capture + Apply verified in Codex/VS Code (Manual verified 2026-02-08)
   - [x] Add AX “walk up the focused element’s parent chain” to find a better text element
   - [x] Add `kAXStringForRangeParameterizedAttribute`/`kAXAttributedStringForRangeParameterizedAttribute` capture path when `selectedTextRange` is available
   - [x] Improve Cmd+C injection by posting a full key chord directly to the target PID (fallback to session tap)
@@ -34,8 +34,8 @@
   - [x] Improve synthetic Cmd+C for Electron: post only `c` key with `.maskCommand`, and try `.cghidEventTap` as an extra fallback tap (Est: 15-30m)
   - [x] Fix Electron Apply appending (instead of replacing selection): show panel without activating McWritely so the target app keeps selection (Est: 30-60m)
   - [x] Prevent paste-fallback append in Electron: before Cmd+V, detect whether a selection is active (marker+Cmd+C). If selection is absent, attempt a safe reselect (Shift+Left by captured length) and verify inserted text via copy selection when possible (Est: 1-2h)
-  - [ ] Fix paste duplication in Electron: avoid multi-route/multi-attempt Cmd+V that can paste multiple times; paste should execute at most once per Apply (Est: 30-60m)
-  - [ ] Manual verification in Codex app + VS Code (Electron) (Est: 15-30m)
+  - [x] Fix paste duplication in Electron: avoid multi-route/multi-attempt Cmd+V that can paste multiple times; paste should execute at most once per Apply (Est: 30-60m)
+  - [x] Manual verification in Codex app + VS Code (Electron) (Est: 15-30m)
 
 ### UI
 
@@ -61,10 +61,15 @@
 - [x] **RELEASE-TASK-020: Release 2.0.10 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
 - [x] **RELEASE-TASK-021: Release 2.0.11 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
 - [x] **RELEASE-TASK-022: Release 2.0.12 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
-- [ ] **RELEASE-TASK-023: Release 2.0.13 (version bump + changelog + rebuilt app/DMG)** - 🟡 **IN PROGRESS** (Est: 30-60m)
-  - [ ] Smoke-test in Codex + VS Code: no post-Apply selection animation; clipboard ends as corrected text
-  - [ ] Smoke-test in Notion: successful Apply does not show red verification error
+- [x] **RELEASE-TASK-023: Release 2.0.13 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
+  - [x] Smoke-test in Codex + VS Code: no post-Apply selection animation; clipboard ends as corrected text
+  - [x] Smoke-test in Notion: successful Apply does not show red verification error
   - [x] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
+- [ ] **RELEASE-TASK-024: Release 2.1.0 (version bump + changelog + rebuilt app/DMG + tag)** - 🟡 **IN PROGRESS** (Est: 30-60m)
+  - [ ] Bump `Info.plist` + README badge to 2.1.0
+  - [ ] Update `CHANGELOG.md` with 2.1.0 notes
+  - [ ] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
+  - [ ] Create and push git tag `v2.1.0`
 
 ### CONFIG
 

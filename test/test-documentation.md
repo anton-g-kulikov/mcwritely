@@ -119,7 +119,7 @@
 
 ### CORE-TEST-023: Manual Validation in Electron Editors (Codex, VS Code)
 
-- **Status**: 📋 NOT STARTED
+- **Status**: ✅ COMPLETED (Manual, 2026-02-08)
 - **Description**: Validate that clipboard-fallback capture retrieves selected text in Electron-based editors where AX selection APIs are missing or unreliable.
 - **Steps**:
   - In Codex app: select a short snippet (include non-ASCII), trigger `Cmd+Opt+Shift+G`, ensure McWritely shows the selection.
@@ -157,7 +157,7 @@
 
 ### CORE-TEST-032: Electron Apply Replaces Selection (Manual)
 
-- **Status**: 📋 NOT STARTED
+- **Status**: ✅ COMPLETED (Manual, 2026-02-08)
 - **Description**: Verify that Apply replaces the selected text in Electron editors (Codex, VS Code) rather than appending at the caret.
 - **Steps**:
   - In Codex app: select a sentence, trigger `Cmd+Opt+Shift+G`, wait for improved text, click Apply.
@@ -167,7 +167,7 @@
 
 ### CORE-TEST-033: Paste Fallback Verifies In Notion (Manual)
 
-- **Status**: 📋 NOT STARTED
+- **Status**: ✅ COMPLETED (Manual, 2026-02-08)
 - **Description**: Verify that when Apply succeeds in Notion, McWritely does not incorrectly show the red “could not verify” warning.
 - **Steps**:
   - In Notion: select a short snippet, trigger `Cmd+Opt+Shift+G`, click Apply.
@@ -177,7 +177,7 @@
 
 ### CORE-TEST-034: Paste Fallback Does Not Duplicate (Manual)
 
-- **Status**: 📋 NOT STARTED
+- **Status**: ✅ COMPLETED (Manual, 2026-02-08)
 - **Description**: Verify paste fallback executes at most once per Apply and does not duplicate the corrected text (especially in Electron editors).
 - **Steps**:
   - In Codex/VS Code: select a short snippet, run McWritely, click Apply.
@@ -220,7 +220,7 @@
 
 ### CORE-TEST-025: Notion Paste Verification Fallback (Manual)
 
-- **Status**: 📋 NOT STARTED
+- **Status**: ✅ COMPLETED (Manual, 2026-02-08)
 - **Description**: Verify that after successful Apply into Notion, McWritely does not show a red “could not verify” warning and the panel closes automatically.
 - **Steps**:
   - In Notion: select a short snippet, run McWritely, press Apply.
@@ -239,9 +239,9 @@
 - **Expected**: Only `.failed` keeps the panel open.
 - **Test File**: `Tests/McWritelyTests/McWritelyTests.swift` (new test)
 
-### CORE-TEST-028: No Post-Apply Selection Animation (Manual)
+### CORE-TEST-036: No Post-Apply Selection Animation (Manual)
 
-- **Status**: 📋 NOT STARTED
+- **Status**: ✅ COMPLETED (Manual, 2026-02-08)
 - **Description**: Verify that Apply does not visibly re-select text (Shift+Left selection animation) after replacement completes.
 - **Steps**:
   - In Codex app: select a sentence, run McWritely, press Apply.
@@ -249,16 +249,16 @@
   - Repeat in VS Code.
 - **Expected**: No visible “select from end to start” animation after Apply.
 
-### CORE-TEST-029: Clipboard Ends As Corrected Text (Manual)
+### CORE-TEST-037: Clipboard Ends As Corrected Text (Manual)
 
-- **Status**: 📋 NOT STARTED
+- **Status**: ✅ COMPLETED (Manual, 2026-02-08)
 - **Description**: Verify that after Apply (regardless of verification), the clipboard contains the corrected text.
 - **Steps**:
   - In any app: select text, run McWritely, press Apply.
   - Immediately paste (Cmd+V) into a plain text field (e.g. Notes, TextEdit in plain mode).
 - **Expected**: Pasted text equals McWritely’s corrected text, not the original selection and not an internal marker.
 
-### CORE-TEST-030: Clipboard Reassert Policy Uses Normalization (Unit)
+### CORE-TEST-038: Clipboard Reassert Policy Uses Normalization (Unit)
 
 - **Status**: ✅ COMPLETED
 - **Description**: Verify the policy that decides whether McWritely should reassert corrected text onto the clipboard after Apply.
