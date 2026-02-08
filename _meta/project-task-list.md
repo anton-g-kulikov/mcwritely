@@ -9,6 +9,13 @@
 - [x] **CORE-TASK-010: Verified replacement results + truthful UI behavior** - ✅ **COMPLETED** - “Apply” now returns verified/unverified/failed results; panel only auto-hides on verified success
 - [x] **CORE-TASK-011: Add AX range/value replacement strategy before paste fallback** - ✅ **COMPLETED** - Uses `kAXSelectedTextRange` + `kAXValue` where available before falling back
 - [x] **CORE-TASK-012: Capture selection reliably in Codex app + VS Code** - ✅ **COMPLETED** - Added AX value+range capture, deterministic clipboard marker copy fallback, and AX menu-copy fallback
+- [ ] **CORE-TASK-015: Reduce false error states after Apply (Notion + Electron) and eliminate post-Apply selection animation** - 🟡 **IN PROGRESS** (Est: 1-2h)
+  - [x] Ensure “unverified but likely applied” does not show a red error state (panel should close; clipboard has corrected text) (Est: 15-30m)
+  - [x] Remove intrusive post-Apply verification that selects text via Shift+Left (avoid visible selection animation) (Est: 15-30m)
+  - [ ] Special-case Notion AX writes: if AX write reports success but verification is unreliable, treat as applied (Est: 15-30m)
+  - [ ] Strengthen clipboard final-state: after Apply returns, corrected text remains on clipboard (Est: 15-30m)
+  - [ ] Add/Update tests + test documentation (Est: 15-30m)
+  - [ ] Manual verification in Notion + Codex + VS Code (Est: 10-20m)
 - [ ] **CORE-TASK-014: Reduce false "unverified paste" in Notion by improving verification** - 🟡 **IN PROGRESS** (Est: 1-2h)
   - [x] Add text normalization for verification comparisons (NBSP, CRLF, whitespace runs)
   - [x] After paste fallback, attempt verification by re-capturing selection from the target app (uses existing capture pipeline)

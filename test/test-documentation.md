@@ -221,12 +221,42 @@
 ### CORE-TEST-025: Notion Paste Verification Fallback (Manual)
 
 - **Status**: 📋 NOT STARTED
-- **Description**: Verify that after successful paste into Notion, McWritely does not show a red “could not verify” warning and the panel closes automatically.
+- **Description**: Verify that after successful Apply into Notion, McWritely does not show a red “could not verify” warning and the panel closes automatically.
 - **Steps**:
   - In Notion: select a short snippet, run McWritely, press Apply.
   - Confirm the document updates.
-  - Confirm McWritely closes (verified) instead of showing an unverified warning.
-- **Expected**: Verified outcome for successful paste in Notion.
+  - Confirm McWritely closes (treated as applied) instead of showing a red unverified warning.
+- **Expected**: No red error state after a successful replacement in Notion.
+
+### CORE-TEST-027: Unverified Apply Closes Panel (Unit)
+
+- **Status**: ✅ COMPLETED
+- **Description**: Verify that “unverified” replacement results still close the panel (since corrected text remains on clipboard as the fallback).
+- **Cases**:
+  - `ReplacementResult.State.verified` closes
+  - `ReplacementResult.State.unverified` closes
+  - `ReplacementResult.State.failed` does not close
+- **Expected**: Only `.failed` keeps the panel open.
+- **Test File**: `Tests/McWritelyTests/McWritelyTests.swift` (new test)
+
+### CORE-TEST-028: No Post-Apply Selection Animation (Manual)
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify that Apply does not visibly re-select text (Shift+Left selection animation) after replacement completes.
+- **Steps**:
+  - In Codex app: select a sentence, run McWritely, press Apply.
+  - Observe whether any selection animation occurs after the text is already replaced.
+  - Repeat in VS Code.
+- **Expected**: No visible “select from end to start” animation after Apply.
+
+### CORE-TEST-029: Clipboard Ends As Corrected Text (Manual)
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify that after Apply (regardless of verification), the clipboard contains the corrected text.
+- **Steps**:
+  - In any app: select text, run McWritely, press Apply.
+  - Immediately paste (Cmd+V) into a plain text field (e.g. Notes, TextEdit in plain mode).
+- **Expected**: Pasted text equals McWritely’s corrected text, not the original selection and not an internal marker.
 
 ### UI-TEST-026: Accessibility Permission UI Refresh (Manual)
 

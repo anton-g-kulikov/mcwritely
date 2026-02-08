@@ -45,7 +45,7 @@ Acceptance:
 Changes:
 - After AX write attempt: read back `kAXSelectedTextAttribute` or `kAXValueAttribute` (depending on element) and verify it matches expected.
 - After paste fallback: wait for a detectable change in the target element’s value/selected text (bounded timeout; retry loop).
-- If verification fails: keep panel open, show error, keep corrected text on clipboard.
+- If verification fails but replacement was attempted: close the panel (no red error), keep corrected text on clipboard so the user can manually paste if needed.
 
 Acceptance:
 - If the UI says “Applied”, the target app actually contains the corrected text.
@@ -104,4 +104,3 @@ Add:
 - Update code to match new clipboard policy (corrected text always in clipboard)
 - Replacement verification + accurate UI status
 - Improved capture for rich pasteboard formats + retries
-
