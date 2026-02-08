@@ -65,11 +65,11 @@
   - [x] Smoke-test in Codex + VS Code: no post-Apply selection animation; clipboard ends as corrected text
   - [x] Smoke-test in Notion: successful Apply does not show red verification error
   - [x] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
-- [ ] **RELEASE-TASK-024: Release 2.1.0 (version bump + changelog + rebuilt app/DMG + tag)** - 🟡 **IN PROGRESS** (Est: 30-60m)
+- [x] **RELEASE-TASK-024: Release 2.1.0 (version bump + changelog + rebuilt app/DMG + tag)** - ✅ **COMPLETED**
   - [x] Bump `Info.plist` + README badge to 2.1.0
   - [x] Update `CHANGELOG.md` with 2.1.0 notes
   - [x] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
-  - [ ] Create and push git tag `v2.1.0`
+  - [x] Create and push git tag `v2.1.0`
 
 ### CONFIG
 
