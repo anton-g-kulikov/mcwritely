@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.13] - 2026-02-08
+### Fixed
+- Reduced false post-Apply error states by closing McWritely after an “unverified” Apply (corrected text remains on clipboard for manual paste fallback).
+- Removed intrusive post-Apply Shift+Left selection verification (prevents visible selection animation after replacement in Electron apps).
+- Improved clipboard reassert logic to handle normalized clipboard text (NBSP/newlines/whitespace).
+
 ## [2.0.12] - 2026-02-07
 ### Fixed
 - Improved Apply in Electron/webviews by preferring menu-based Paste (Edit -> Paste) over synthetic key events, reasserting the corrected text on the clipboard after clipboard-based checks, and treating Notion paste as verified when a selection was present at paste time.
