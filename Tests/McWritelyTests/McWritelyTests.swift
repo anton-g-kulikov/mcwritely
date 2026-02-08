@@ -155,6 +155,12 @@ final class McWritelyTests: XCTestCase {
         XCTAssertFalse(ReplacementVerifier.isVerified(selectedText: "Something else", value: "Other", correctedText: "Hello"))
     }
 
+    func testReplacementResultShouldClosePanelForUnverifiedButNotFailed() throws {
+        XCTAssertTrue(ReplacementResult(method: .paste, state: .verified, detail: nil).shouldClosePanel)
+        XCTAssertTrue(ReplacementResult(method: .paste, state: .unverified, detail: "could not verify").shouldClosePanel)
+        XCTAssertFalse(ReplacementResult(method: .paste, state: .failed, detail: "did not apply").shouldClosePanel)
+    }
+
     func testRangeReplacementHappyPath() throws {
         let s = "Hello world"
         let replaced = StringRangeReplacer.replacing(in: s, range: NSRange(location: 6, length: 5), with: "there")

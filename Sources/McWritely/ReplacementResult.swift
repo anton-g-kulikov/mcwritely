@@ -17,5 +17,7 @@ struct ReplacementResult {
     let state: State
     let detail: String?
 
-    var shouldClosePanel: Bool { state == .verified }
+    // We treat "unverified" as "applied but not provably verified" and close the panel.
+    // The corrected text remains on the clipboard so the user can manually paste if needed.
+    var shouldClosePanel: Bool { state != .failed }
 }
