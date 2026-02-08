@@ -13,7 +13,7 @@
   - [x] Ensure “unverified but likely applied” does not show a red error state (panel should close; clipboard has corrected text) (Est: 15-30m)
   - [x] Remove intrusive post-Apply verification that selects text via Shift+Left (avoid visible selection animation) (Est: 15-30m)
   - [ ] Special-case Notion AX writes: if AX write reports success but verification is unreliable, treat as applied (Est: 15-30m)
-  - [ ] Strengthen clipboard final-state: after Apply returns, corrected text remains on clipboard (Est: 15-30m)
+  - [x] Strengthen clipboard final-state: after Apply returns, corrected text remains on clipboard (Est: 15-30m)
   - [ ] Add/Update tests + test documentation (Est: 15-30m)
   - [ ] Manual verification in Notion + Codex + VS Code (Est: 10-20m)
 - [ ] **CORE-TASK-014: Reduce false "unverified paste" in Notion by improving verification** - 🟡 **IN PROGRESS** (Est: 1-2h)

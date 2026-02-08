@@ -224,6 +224,27 @@ final class McWritelyTests: XCTestCase {
         XCTAssertEqual(TextNormalizer.normalizeForVerification(s1), TextNormalizer.normalizeForVerification(s2))
     }
 
+    func testClipboardReassertPolicyUsesNormalization() throws {
+        XCTAssertFalse(ClipboardReassertPolicy.shouldReassert(
+            currentClipboardText: "corrected",
+            correctedText: "corrected",
+            originalSelectedText: "original"
+        ))
+
+        XCTAssertTrue(ClipboardReassertPolicy.shouldReassert(
+            currentClipboardText: "MCWR_SOMETHING",
+            correctedText: "corrected",
+            originalSelectedText: "original"
+        ))
+
+        // Clipboard may get a normalized version of the original selection (NBSP -> space, CRLF -> LF).
+        XCTAssertTrue(ClipboardReassertPolicy.shouldReassert(
+            currentClipboardText: "Hello world\nNext",
+            correctedText: "corrected",
+            originalSelectedText: "Hello\u{00A0}world\r\nNext"
+        ))
+    }
+
     func testReplacementVerificationUsesNormalization() throws {
         // Notion/Electron often normalize whitespace; verification should treat these as equivalent.
         let ok = ReplacementVerifier.isVerified(

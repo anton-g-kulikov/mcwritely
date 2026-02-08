@@ -258,6 +258,17 @@
   - Immediately paste (Cmd+V) into a plain text field (e.g. Notes, TextEdit in plain mode).
 - **Expected**: Pasted text equals McWritely’s corrected text, not the original selection and not an internal marker.
 
+### CORE-TEST-030: Clipboard Reassert Policy Uses Normalization (Unit)
+
+- **Status**: ✅ COMPLETED
+- **Description**: Verify the policy that decides whether McWritely should reassert corrected text onto the clipboard after Apply.
+- **Cases**:
+  - If clipboard already equals corrected text: do not reassert
+  - If clipboard has an internal marker prefix (`MCWR_`): reassert
+  - If clipboard equals the originally selected text after normalization (whitespace/NBSP/newlines): reassert
+- **Expected**: The policy is conservative and only reasserts for values likely caused by McWritely’s own copy/marker flows.
+- **Test File**: `Tests/McWritelyTests/McWritelyTests.swift` (new test)
+
 ### UI-TEST-026: Accessibility Permission UI Refresh (Manual)
 
 - **Status**: 📋 NOT STARTED

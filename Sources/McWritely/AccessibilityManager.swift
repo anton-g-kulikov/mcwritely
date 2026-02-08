@@ -383,7 +383,11 @@ class AccessibilityManager {
             DispatchQueue.main.asyncAfter(deadline: .now() + d) {
                 let current = PasteboardTextExtractor.plainText(from: pasteboard) ?? ""
                 if current == correctedText { return }
-                if current.hasPrefix(AccessibilityManager.clipboardMarkerPrefix) || current == originalSelectedText {
+                if ClipboardReassertPolicy.shouldReassert(
+                    currentClipboardText: current,
+                    correctedText: correctedText,
+                    originalSelectedText: originalSelectedText
+                ) {
                     setNow()
                 }
             }
