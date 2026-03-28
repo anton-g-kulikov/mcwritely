@@ -245,6 +245,62 @@ final class McWritelyTests: XCTestCase {
         ))
     }
 
+    func testCorrectionPanelLayoutUsesSharedDimensions() throws {
+        let emptyState = CorrectionPanelState(
+            correctedText: "",
+            originalText: "",
+            isProcessing: false,
+            errorMessage: nil
+        )
+        let emptySize = CorrectionPanelLayout.windowSize(for: emptyState)
+
+        XCTAssertEqual(
+            emptySize.width,
+            CorrectionPanelLayout.contentWidth + (CorrectionPanelLayout.outerPadding * 2)
+        )
+        XCTAssertGreaterThan(emptySize.height, CorrectionPanelLayout.outerPadding * 2)
+    }
+
+    func testCorrectionPanelLayoutAdaptsToContentState() throws {
+        let emptyState = CorrectionPanelState(
+            correctedText: "",
+            originalText: "",
+            isProcessing: false,
+            errorMessage: nil
+        )
+        let loadingState = CorrectionPanelState(
+            correctedText: "",
+            originalText: "Short loading text.",
+            isProcessing: true,
+            errorMessage: nil
+        )
+        let shortResultState = CorrectionPanelState(
+            correctedText: "Short result.",
+            originalText: "Short input.",
+            isProcessing: false,
+            errorMessage: nil
+        )
+        let longResultState = CorrectionPanelState(
+            correctedText: String(repeating: "This is a much longer correction that should need more room. ", count: 8),
+            originalText: "Input",
+            isProcessing: false,
+            errorMessage: nil
+        )
+
+        let emptySize = CorrectionPanelLayout.windowSize(for: emptyState)
+        let loadingSize = CorrectionPanelLayout.windowSize(for: loadingState)
+        let shortResultSize = CorrectionPanelLayout.windowSize(for: shortResultState)
+        let longResultSize = CorrectionPanelLayout.windowSize(for: longResultState)
+
+        XCTAssertLessThanOrEqual(loadingSize.height, shortResultSize.height)
+        XCTAssertLessThan(shortResultSize.height, longResultSize.height)
+        XCTAssertGreaterThanOrEqual(emptySize.height, loadingSize.height)
+        XCTAssertLessThan(
+            CorrectionPanelLayout.resultAreaHeight(for: "Short result."),
+            CorrectionPanelLayout.resultAreaHeight(for: longResultState.correctedText)
+        )
+    }
+
     func testReplacementVerificationUsesNormalization() throws {
         // Notion/Electron often normalize whitespace; verification should treat these as equivalent.
         let ok = ReplacementVerifier.isVerified(

@@ -2,9 +2,9 @@ import SwiftUI
 import AppKit
 
 class CorrectionPanel: NSPanel {
-    init(contentView: NSView) {
+    init(contentView: NSView, size: CGSize = CorrectionPanelLayout.windowSize) {
         super.init(
-            contentRect: NSRect(x: 0, y: 0, width: 420, height: 400),
+            contentRect: NSRect(origin: .zero, size: size),
             // Non-activating so Electron apps keep the selection even while the panel is visible/clicked.
             styleMask: [.borderless, .fullSizeContentView, .nonactivatingPanel],
             backing: .buffered,

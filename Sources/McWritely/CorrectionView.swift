@@ -2,6 +2,19 @@ import SwiftUI
 
 struct CorrectionView: View {
     @ObservedObject var viewModel: CorrectionViewModel
+
+    private var panelState: CorrectionPanelState {
+        CorrectionPanelState(
+            correctedText: viewModel.correctedText,
+            originalText: viewModel.originalText,
+            isProcessing: viewModel.isProcessing,
+            errorMessage: viewModel.errorMessage
+        )
+    }
+
+    private var showsApplySuggestion: Bool {
+        panelState.showsApplySuggestion
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -38,40 +51,24 @@ struct CorrectionView: View {
             if !viewModel.originalText.isEmpty || !viewModel.correctedText.isEmpty {
                 VStack(alignment: .leading, spacing: 12) {
                     // Result area
-                    if !viewModel.correctedText.isEmpty {
-                        VStack(alignment: .leading, spacing: 12) {
-                            TextEditor(text: .constant(viewModel.correctedText))
-                                .font(.system(.body, design: .rounded))
-                                .foregroundStyle(.primary)
-                                .scrollContentBackground(.hidden)
-                                .lineSpacing(4)
-                                .padding(8)
-                                .frame(minHeight: 100, maxHeight: 300)
-                                .background(Color.blue.opacity(0.05))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .stroke(Color.blue.opacity(0.1), lineWidth: 1)
-                                )
-                            
-                            Button(action: {
-                                Task {
-                                    await viewModel.applyCorrection()
-                                }
-                            }) {
-                                HStack {
-                                    Image(systemName: "checkmark.circle.fill")
-                                    Text("Apply Suggestion")
-                                }
-                                .frame(maxWidth: .infinity)
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .tint(.blue)
-                            .controlSize(.large)
-                        }
+                    if showsApplySuggestion {
+                        TextEditor(text: .constant(viewModel.correctedText))
+                            .font(.system(.body, design: .rounded))
+                            .foregroundStyle(.primary)
+                            .scrollContentBackground(.hidden)
+                            .lineSpacing(4)
+                            .padding(8)
+                            .frame(height: CorrectionPanelLayout.resultAreaHeight(for: viewModel.correctedText))
+                            .background(Color.blue.opacity(0.05))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.blue.opacity(0.1), lineWidth: 1)
+                            )
                     } else if viewModel.isProcessing {
                         Text(viewModel.originalText)
                             .blur(radius: 2)
                             .opacity(0.5)
+                            .frame(maxWidth: .infinity, minHeight: CorrectionPanelLayout.loadingPreviewHeight(for: viewModel.originalText), alignment: .leading)
                             .padding(12)
                     }
                 }
@@ -94,31 +91,50 @@ struct CorrectionView: View {
             
             Divider()
             
-            VStack(spacing: 12) {
-                Button(action: {
-                    viewModel.reset()
-                    PanelManager.shared.hide()
-                }) {
-                    HStack {
-                        Image(systemName: "xmark.circle")
-                        Text("Close")
+            VStack(spacing: 4) {
+                if showsApplySuggestion {
+                    NativeActionButton(
+                        title: "Apply Suggestion",
+                        systemImageName: nil,
+                        isPrimary: true,
+                        minimumHeight: 42,
+                        fontSize: 15
+                    ) {
+                        Task {
+                            await viewModel.applyCorrection()
+                        }
                     }
                     .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
-                .controlSize(.large)
-                .foregroundStyle(.secondary)
+
+                NativeActionButton(
+                    title: "Close",
+                    systemImageName: nil,
+                    isPrimary: false,
+                    minimumHeight: 28,
+                    fontSize: 13
+                ) {
+                    viewModel.reset()
+                    PanelManager.shared.hide()
+                }
+                .frame(maxWidth: .infinity)
             }
         }
         .padding(24)
-        .frame(width: 420) // Slightly wider for multiline text
+        .frame(
+            minWidth: CorrectionPanelLayout.contentWidth,
+            idealWidth: CorrectionPanelLayout.contentWidth,
+            maxWidth: CorrectionPanelLayout.contentWidth,
+            minHeight: CorrectionPanelLayout.contentHeight(for: panelState),
+            alignment: .top
+        )
         .background {
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .fill(Color.white)
                 .shadow(color: .black.opacity(0.2), radius: 28, x: 0, y: 14)
         }
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .padding(20) // Outer padding for shadow clearance
+        .padding(CorrectionPanelLayout.outerPadding) // Outer padding for shadow clearance
         .onReceive(NotificationCenter.default.publisher(for: .triggerCorrection)) { notification in
             if let context = notification.object as? TriggerCorrectionContext {
                 if let target = context.capturedTarget {
