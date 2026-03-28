@@ -269,6 +269,50 @@
 - **Expected**: The policy is conservative and only reasserts for values likely caused by McWritely’s own copy/marker flows.
 - **Test File**: `Tests/McWritelyTests/McWritelyTests.swift` (new test)
 
+### UI-TEST-039: Correction Panel Layout Uses Shared Dimensions (Unit)
+
+- **Status**: ✅ COMPLETED
+- **Description**: Verify that the correction panel/window dimensions remain aligned with the SwiftUI view's declared width and outer shadow padding so action buttons are not clipped by a smaller host view.
+- **Cases**:
+  - Window width equals content width plus outer padding on both sides.
+  - Hosting view width matches the window width.
+  - Minimum window height leaves room for the corrected-text editor and both action rows.
+- **Expected**: Shared layout constants define a single source of truth for the correction panel's width/height, and the window remains large enough to keep `Apply Suggestion` visible.
+- **Test File**: `Tests/McWritelyTests/McWritelyTests.swift:testCorrectionPanelLayoutUsesSharedDimensions`
+
+### UI-TEST-040: Footer Keeps Apply Action Visible (Manual)
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify that when corrected text is shown, the primary `Apply Suggestion` action appears in the fixed footer above `Close`, instead of being pushed out by the editor content.
+- **Steps**:
+  - Trigger McWritely on a selection long enough to produce a multiline correction.
+  - Confirm the footer shows `Apply Suggestion`.
+  - Confirm `Close` remains visible below it.
+  - Confirm the editor scrolls internally for long text rather than pushing footer actions out of view.
+- **Expected**: The primary action remains visible for corrected text, regardless of content length.
+
+### UI-TEST-041: Primary Button Renders In Non-Activating Panel (Manual)
+
+- **Status**: 📋 NOT STARTED
+- **Description**: Verify that the AppKit-native primary `Apply Suggestion` button is visibly rendered in packaged builds even though McWritely uses a non-activating floating panel that never becomes key.
+- **Steps**:
+  - Install and open the packaged `McWritely.app`.
+  - Trigger McWritely on a selection that produces corrected text.
+  - Confirm the footer shows a blue `Apply Suggestion` button above `Close`.
+  - Confirm the button remains visible while the target app stays active behind McWritely.
+- **Expected**: The primary action is visible and native-looking in the packaged app, not hidden by inactive-window SwiftUI/AppKit styling interactions.
+
+### UI-TEST-042: Panel Height Adapts To Content State (Unit + Manual)
+
+- **Status**: ✅ COMPLETED (Unit)
+- **Description**: Verify that the correction panel becomes shorter for loading/short-result states and taller only when the corrected text actually needs more space.
+- **Cases**:
+  - Idle/empty state uses the compact baseline height.
+  - Loading with a short original selection stays compact.
+  - Short corrected text uses less height than long corrected text.
+  - Long corrected text is capped and scrolls instead of growing indefinitely.
+- **Expected**: The panel avoids large empty areas for short content while preserving readability for longer corrections.
+
 ### UI-TEST-026: Accessibility Permission UI Refresh (Manual)
 
 - **Status**: 📋 NOT STARTED

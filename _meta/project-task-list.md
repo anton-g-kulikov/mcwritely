@@ -41,6 +41,37 @@
 
 - [x] **UI-TASK-006: Remove auto-capture on open; Open McWritely shows empty panel** - ✅ **COMPLETED** - Prevents error flash; adds explicit reset; ignores stale capture results
 - [x] **UI-TASK-007: Reset-before-show + prevent stale tasks from leaving spinner on** - ✅ **COMPLETED**
+- [x] **UI-TASK-016: Fix non-blue Apply and oversized empty footer area** - ✅ **COMPLETED** - Apply now uses explicit blue AppKit-layer styling and panel height budget is tightened to remove dead space below Close
+  - [x] Force primary Apply rendering to explicit blue in the non-key panel (Est: 15-30m)
+  - [x] Reduce panel/footer reserved height constants so short content does not leave a large empty footer area (Est: 15-30m)
+- [x] **UI-TASK-015: Force a visibly active native Apply button in the non-key panel** - ✅ **COMPLETED** - Apply now forces active Aqua appearance while staying AppKit-native
+  - [x] Keep the Apply button AppKit-native but force an active Aqua appearance so it does not stay flat gray (Est: 15-30m)
+  - [x] Return Apply sizing to a standard native scale with a clearer primary/secondary contrast (Est: 15-30m)
+  - [x] Update release notes for the active native button rendering change (Est: 5-10m)
+- [x] **UI-TASK-014: Refine native footer button hierarchy after oversizing Apply** - ✅ **COMPLETED** - Apply is back to a more normal native scale with tighter footer spacing
+  - [x] Reduce Apply icon/text/button height to a more normal native scale while keeping it primary (Est: 15-30m)
+  - [x] Tighten footer spacing so the action stack feels less bloated (Est: 15-30m)
+  - [x] Update release notes for the toned-down native footer hierarchy (Est: 5-10m)
+- [x] **UI-TASK-013: Make the native Apply button larger and more prominent** - ✅ **COMPLETED** - Apply now uses a much taller AppKit-native button with larger icon/title while Close remains secondary
+  - [x] Increase the AppKit-native Apply button height and font size for stronger visual priority (Est: 15-30m)
+  - [x] Keep the Close button secondary so the footer hierarchy stays clear (Est: 15-30m)
+  - [x] Update release notes for the stronger Apply affordance (Est: 5-10m)
+- [x] **UI-TASK-012: Make panel height adapt to short loading/results states** - ✅ **COMPLETED** - Panel height now follows loading/result state, keeping short content compact while preserving scroll space for longer corrections
+  - [x] Compute content/window height from the current panel state instead of a single fixed height (Est: 15-30m)
+  - [x] Reduce result-area height for short corrected text while preserving scroll for long text (Est: 15-30m)
+  - [x] Add/update tests and verification notes for compact loading/result layouts (Est: 15-30m)
+- [x] **UI-TASK-011: Make the primary Apply button visible on non-activating panels** - ✅ **COMPLETED** - Primary action now uses an AppKit-native button bridge so it renders in the non-key floating panel
+  - [x] Replace SwiftUI prominent styling with an AppKit-native button bridge that renders correctly in a non-key panel (Est: 15-30m)
+  - [x] Keep footer action spacing consistent when the panel is inactive/non-key (Est: 15-30m)
+  - [x] Add/update verification notes for primary button visibility in packaged builds (Est: 15-30m)
+- [x] **UI-TASK-010: Keep the primary Apply action in a fixed footer** - ✅ **COMPLETED** - `Apply Suggestion` now renders in the footer above `Close`, with a shorter panel height budget for empty/error states
+  - [x] Move `Apply Suggestion` out of the scrollable result area and into the bottom action stack (Est: 15-30m)
+  - [x] Reduce oversized empty-state/corrected-state panel height so the layout does not leave dead space (Est: 15-30m)
+  - [x] Add/update tests and manual verification notes for footer action visibility (Est: 15-30m)
+- [x] **UI-TASK-009: Fix correction panel clipping after recent macOS updates** - ✅ **COMPLETED** - Shared panel sizing constants now keep the primary action visible on newer macOS layout behavior
+  - [x] Replace mismatched hard-coded panel/hosting sizes with shared layout constants (Est: 15-30m)
+  - [x] Keep the primary action visible when corrected text is present (Est: 15-30m)
+  - [x] Add/update unit tests and test documentation for panel layout sizing (Est: 15-30m)
 - [ ] **UI-TASK-008: Permissions UI should reflect granted Accessibility access** - 🟡 **IN PROGRESS** (Est: 30-60m)
   - [x] Re-check `AXIsProcessTrusted` on Settings open and when app becomes active
   - [x] Make "Request Access" open the Accessibility settings pane and refresh status
@@ -70,6 +101,42 @@
   - [x] Update `CHANGELOG.md` with 2.1.0 notes
   - [x] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
   - [x] Create and push git tag `v2.1.0`
+- [x] **RELEASE-TASK-025: Release 2.1.1 (version bump + changelog + rebuilt app/DMG)** - ✅ **COMPLETED**
+  - [x] Bump `Info.plist` + README badge to 2.1.1
+  - [x] Update `CHANGELOG.md` with 2.1.1 notes
+  - [x] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
+- [x] **RELEASE-TASK-026: Release 2.1.2 (footer Apply visibility fix + rebuilt app/DMG)** - ✅ **COMPLETED**
+  - [x] Bump `Info.plist` + README badge to 2.1.2
+  - [x] Update `CHANGELOG.md` with 2.1.2 notes
+  - [x] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
+- [x] **RELEASE-TASK-027: Release 2.1.3 (explicit Apply button rendering fix + rebuilt app/DMG)** - ✅ **COMPLETED**
+  - [x] Bump `Info.plist` + README badge to 2.1.3
+  - [x] Update `CHANGELOG.md` with 2.1.3 notes
+  - [x] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
+- [x] **RELEASE-TASK-028: Release 2.1.4 (adaptive panel height + rebuilt app/DMG)** - ✅ **COMPLETED**
+  - [x] Bump `Info.plist` + README badge to 2.1.4
+  - [x] Update `CHANGELOG.md` with 2.1.4 notes
+  - [x] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
+- [x] **RELEASE-TASK-029: Release 2.1.5 (larger native Apply button + rebuilt app/DMG)** - ✅ **COMPLETED**
+  - [x] Bump `Info.plist` + README badge to 2.1.5
+  - [x] Update `CHANGELOG.md` with 2.1.5 notes
+  - [x] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
+- [x] **RELEASE-TASK-030: Release 2.1.6 (refined native footer button hierarchy + rebuilt app/DMG)** - ✅ **COMPLETED**
+  - [x] Bump `Info.plist` + README badge to 2.1.6
+  - [x] Update `CHANGELOG.md` with 2.1.6 notes
+  - [x] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
+- [x] **RELEASE-TASK-031: Release 2.1.7 (active native Apply appearance + rebuilt app/DMG)** - ✅ **COMPLETED**
+  - [x] Bump `Info.plist` + README badge to 2.1.7
+  - [x] Update `CHANGELOG.md` with 2.1.7 notes
+  - [x] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
+- [x] **RELEASE-TASK-032: Release 2.1.8 (blue Apply + compact footer height + rebuilt app/DMG)** - ✅ **COMPLETED**
+  - [x] Bump `Info.plist` + README badge to 2.1.8
+  - [x] Update `CHANGELOG.md` with 2.1.8 notes
+  - [x] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
+- [x] **RELEASE-TASK-033: Release 2.1.9 (blue Apply style lock + compact footer reserve + rebuilt app/DMG)** - ✅ **COMPLETED**
+  - [x] Bump `Info.plist` + README badge to 2.1.9
+  - [x] Update `CHANGELOG.md` with 2.1.9 notes
+  - [x] Rebuild `McWritely.app` and `McWritely.dmg` via `./package.sh`
 
 ### CONFIG
 
